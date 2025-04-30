@@ -69,7 +69,6 @@ jobs:
       - name: Print PATH
         run: |
           echo $PATH
-          emconfigure
 
       - name: Use CCache
         if: env.USE_CCACHE == 'true'
