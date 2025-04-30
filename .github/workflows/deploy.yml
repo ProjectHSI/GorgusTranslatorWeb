@@ -17,10 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Update APT
-        run: apt-get update
+        run: sudo apt-get update
 
       - name: Install APT Dependencies
-        run: apt-get install ccache -y
+        run: sudo apt-get install ccache -y
 
       - name: Setup cache
         id: cache-em-cache
