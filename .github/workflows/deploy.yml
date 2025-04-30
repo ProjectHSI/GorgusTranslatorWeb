@@ -60,9 +60,10 @@ jobs:
       # unfortunately, sourcing the EMSDK Env setup script doesn't work.
       - name: Add EMSDK to Environment
         run: |
-          echo "::set-env name=PATH::/home/runner/work/GorgusTranslatorWeb/GorgusTranslatorWeb/emsdk:/home/runner/work/GorgusTranslatorWeb/GorgusTranslatorWeb/emsdk/upstream/emscripten:$PATH"
-          echo "::set-env name=EMSDK::/home/runner/work/GorgusTranslatorWeb/GorgusTranslatorWeb/emsdk"
-          echo "::set-env name=EMSDK_NODE::/home/runner/work/GorgusTranslatorWeb/GorgusTranslatorWeb/emsdk/node/20.18.0_64bit/bin/node"
+          EMSDK_CMD=1 ./emsdk construct_env
+          sed -i "s/SET //g" emsdk_set_env.bat
+          mv emsdk_set_env.bat emsdk_set_env
+          cat emsdk_set_env >> $GITHUB_ENV
 
       - name: Print PATH
         run: echo $PATH
