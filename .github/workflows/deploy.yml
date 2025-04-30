@@ -27,6 +27,9 @@ jobs:
           version: ${{env.EM_VERSION}}
           actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
 
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
@@ -37,9 +40,6 @@ jobs:
         with:
           node-version: 23
           cache: pnpm
-
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - name: Checkout Python
         uses: actions/checkout@v4
