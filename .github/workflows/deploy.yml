@@ -55,8 +55,14 @@ jobs:
           ./emsdk activate ${{ env.EM_VERSION }}
           cd ..
 
+      # needs to be set manually.
+      # downside is we need to update this whenever EMSDK updates. particularly the node version.
+      # unfortunately, sourcing the EMSDK Env setup script doesn't work.
       - name: Add EMSDK to Environment
-        run: source ./emsdk/emsdk_env.sh
+        run: |
+          echo "::set-env name=PATH::/home/runner/work/GorgusTranslatorWeb/GorgusTranslatorWeb/emsdk:/home/runner/work/GorgusTranslatorWeb/GorgusTranslatorWeb/emsdk/upstream/emscripten:$PATH"
+          echo "::set-env name=EMSDK::/home/runner/work/GorgusTranslatorWeb/GorgusTranslatorWeb/emsdk"
+          echo "::set-env name=EMSDK_NODE::/home/runner/work/GorgusTranslatorWeb/GorgusTranslatorWeb/emsdk/node/20.18.0_64bit/bin/node"
 
       - name: Print PATH
         run: echo $PATH
