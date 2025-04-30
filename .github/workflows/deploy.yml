@@ -8,15 +8,22 @@ on:
 
 env:
   EM_VERSION: 4.0.5
-  EM_CACHE_FOLDER: "emsdk-cache"
+  #EM_CACHE_FOLDER: "emsdk-cache"
+  CCACHE_DIR: "ccache-dir"
   PYTHON_VERSION: '3.14'
 
 jobs:
   build_site:
     runs-on: ubuntu-latest
     steps:
+      - name: Update APT
+        run: apt-get update
+
+      - name: Install APT Dependencies
+        run: apt-get install ccache -y
+
       - name: Setup cache
-        id: cache-system-libraries
+        id: cache-em-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -24,12 +31,33 @@ jobs:
             ${{env.EM_CACHE_FOLDER}}
           key: emsdk-${{env.EM_VERSION}}-${{ runner.os }}
 
-      - name: Setup EMSDK
-        uses: mymindstorm/setup-emsdk@v14
+      #- name: Setup EMSDK
+      #  uses: mymindstorm/setup-emsdk@v14
+      #  with:
+      #    version: ${{env.EM_VERSION}}
+      #    actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+      #    no-cache: 'true'
+
+      - name: Checkout EMSDK
+        if: steps.cache-em-cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
         with:
-          version: ${{env.EM_VERSION}}
-          actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
-          no-cache: 'true'
+          repository: 'emscripten-core/emsdk'
+          path: "emsdk"
+
+      - name: Setup EMSDK
+        if: steps.cache-em-cache.outputs.cache-hit != 'true'
+        run: |
+          cd emsdk
+          ./emsdk install ${{ env.EM_VERSION }}
+          ./emsdk activate ${{ env.EM_VERSION }}
+          cd ..
+
+      - name: Add EMSDK to Environment
+        run: source ./emsdk/emsdk_env.sh
+
+      - name: Use CCache
+        run: export EM_COMPILER_WRAPPER=ccache CCACHE_DIR=${{ env.CCACHE_DIR }}
 
       - name: Checkout
         uses: actions/checkout@v4
