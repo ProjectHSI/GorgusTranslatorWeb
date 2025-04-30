@@ -60,10 +60,10 @@ jobs:
       # unfortunately, sourcing the EMSDK Env setup script doesn't work.
       - name: Add EMSDK to Environment
         run: |
-          EMSDK_CMD=1 ./emsdk construct_env
-          sed -i "s/SET //g" emsdk_set_env.bat
-          mv emsdk_set_env.bat emsdk_set_env
-          cat emsdk_set_env >> $GITHUB_ENV
+          EMSDK_CMD=1 ./emsdk/emsdk construct_env
+          sed -i "s/SET //g" ./emsdk/emsdk_set_env.bat
+          mv ./emsdk/emsdk_set_env.bat ./emsdk/emsdk_set_env
+          cat ./emsdk/emsdk_set_env >> $GITHUB_ENV
 
       - name: Print PATH
         run: echo $PATH
