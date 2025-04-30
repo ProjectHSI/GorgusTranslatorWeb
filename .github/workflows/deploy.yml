@@ -58,6 +58,9 @@ jobs:
       - name: Add EMSDK to Environment
         run: source ./emsdk/emsdk_env.sh
 
+      - name: Print PATH
+        run: echo $PATH
+
       - name: Use CCache
         if: env.USE_CCACHE == 'true'
         run: export EM_COMPILER_WRAPPER=ccache CCACHE_DIR=${{ env.CCACHE_DIR }}
