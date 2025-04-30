@@ -9,7 +9,7 @@ on:
 env:
   EM_VERSION: 4.0.5
   #EM_CACHE_FOLDER: "emsdk-cache"
-  USE_CCACHE: 'false'
+  USE_CCACHE: 'true'
   CCACHE_DIR: "ccache-dir"
   PYTHON_VERSION: '3.14'
 
@@ -30,7 +30,8 @@ jobs:
         with:
           path: |
             emsdk
-            ${{env.EM_CACHE_FOLDER}}
+            ${{ env.EM_CACHE_FOLDER }}
+            ${{ env.CCACHE_DIR }}
           key: emsdk-${{env.EM_VERSION}}-${{ runner.os }}
 
       #- name: Setup EMSDK
@@ -70,7 +71,8 @@ jobs:
 
       - name: Use CCache
         if: env.USE_CCACHE == 'true'
-        run: export EM_COMPILER_WRAPPER=ccache CCACHE_DIR=${{ env.CCACHE_DIR }}
+        run: |
+          echo "EM_COMPILER_WRAPPER=ccache" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v4
