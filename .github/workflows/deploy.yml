@@ -9,7 +9,7 @@ on:
 env:
   EM_VERSION: 4.0.5
   #EM_CACHE_FOLDER: "emsdk-cache"
-  USE_CCACHE: 'true'
+  USE_CCACHE: 'false'
   CCACHE_DIR: "ccache-dir"
   PYTHON_VERSION: '3.14'
 
@@ -67,7 +67,9 @@ jobs:
           cat ./emsdk/emsdk_set_env >> $GITHUB_ENV
 
       - name: Print PATH
-        run: echo $PATH
+        run: |
+          echo $PATH
+          emconfigure
 
       - name: Use CCache
         if: env.USE_CCACHE == 'true'
