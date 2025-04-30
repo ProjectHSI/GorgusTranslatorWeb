@@ -9,7 +9,7 @@ on:
 env:
   EM_VERSION: 4.0.5
   EM_CACHE_FOLDER: "emsdk-cache"
-  PYTHON_VERSION: "3.14"
+  PYTHON_VERSION: '3.14'
 
 jobs:
   build_site:
@@ -43,11 +43,19 @@ jobs:
           cache: pnpm
 
       - name: Checkout Python
+        if: ${{ env.PYTHON_VERSION != '3.14' }}
         uses: actions/checkout@v4
         with:
           repository: 'python/cpython'
           path: "cpython"
-          ref: ${{ env.PYTHON_VERSION == '3.14' && 'master' || env.PYTHON_VERSION }}
+          ref: ${{ env.PYTHON_VERSION }}
+
+      - name: Checkout Python (No Explict Ref)
+        if: ${{ env.PYTHON_VERSION == '3.14' }}
+        uses: actions/checkout@v4
+        with:
+          repository: 'python/cpython'
+          path: "cpython"
 
       - name: Download and apply "picnixz"'s "fix/build/hacl-emscripten-133042" branch
         run: |
