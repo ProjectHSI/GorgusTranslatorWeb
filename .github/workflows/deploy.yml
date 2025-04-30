@@ -1,0 +1,98 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+env:
+  EM_VERSION: 4.0.5
+  EM_CACHE_FOLDER: "emsdk-cache"
+
+jobs:
+  build_site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup cache
+        id: cache-system-libraries
+        uses: actions/cache@v2
+        with:
+          path: ${{env.EM_CACHE_FOLDER}}
+          key: emsdk-${{env.EM_VERSION}}-${{ runner.os }}
+
+      - name: Setup EMSDK
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{env.EM_VERSION}}
+          actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: pnpm
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout Python
+        uses: actions/checkout@v4
+        with:
+          repository: 'python/cpython'
+          path: "cpython"
+
+      - name: Download and apply "picnixz"'s "fix/build/hacl-emscripten-133042" branch
+        run: |
+          cd ${{ github.workspace }}/cpython
+          wget -O emscriptenFixBuildPatch.patch https://patch-diff.githubusercontent.com/raw/python/cpython/pull/133064.patch
+          git apply --index emscriptenFixBuildPatch.patch
+          cd ..
+
+      - name: Build Emscripten CPython
+        run: |
+          cd cpython
+          python Tools/wasm/emscripten build
+          cd ..
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Copy Emscripten Python
+        run: |
+          cp cpython/cross-build/wasm32-emscripten/build/python/python*.zip  static
+          cp cpython/cross-build/wasm32-emscripten/build/python/python.wasm  static
+          cp cpython/cross-build/wasm32-emscripten/build/python/python.mjs   static
+
+      - name: build
+        env:
+          BASE_PATH: '/${{ github.event.repository.name }}'
+        run: |
+          pnpm run build
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'build/'
+
+  deploy:
+    needs: build_site
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
