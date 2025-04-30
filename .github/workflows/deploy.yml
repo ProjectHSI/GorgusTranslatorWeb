@@ -24,6 +24,35 @@ jobs:
         if: env.USE_CCACHE == 'true'
         run: sudo apt-get install ccache -y
 
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: pnpm
+
+      - name: Checkout Python
+        if: ${{ env.PYTHON_VERSION != '3.14' }}
+        uses: actions/checkout@v4
+        with:
+          repository: 'python/cpython'
+          path: "cpython"
+          ref: ${{ env.PYTHON_VERSION }}
+
+      - name: Checkout Python (No Explict Ref)
+        if: ${{ env.PYTHON_VERSION == '3.14' }}
+        uses: actions/checkout@v4
+        with:
+          repository: 'python/cpython'
+          path: "cpython"
+
       - name: Setup cache
         id: cache-em-cache
         uses: actions/cache@v4
@@ -56,9 +85,6 @@ jobs:
           ./emsdk activate ${{ env.EM_VERSION }}
           cd ..
 
-      # needs to be set manually.
-      # downside is we need to update this whenever EMSDK updates. particularly the node version.
-      # unfortunately, sourcing the EMSDK Env setup script doesn't work.
       - name: Add EMSDK to Environment
         run: |
           EMSDK_CMD=1 ./emsdk/emsdk construct_env
@@ -66,43 +92,14 @@ jobs:
           mv ./emsdk/emsdk_set_env.bat ./emsdk/emsdk_set_env
           cat ./emsdk/emsdk_set_env >> $GITHUB_ENV
 
-      - name: Print PATH
-        run: |
-          echo $PATH
+      #- name: Print PATH
+      #  run: |
+      #    echo $PATH
 
       - name: Use CCache
         if: env.USE_CCACHE == 'true'
         run: |
           echo "EM_COMPILER_WRAPPER=ccache" >> $GITHUB_ENV
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 23
-          cache: pnpm
-
-      - name: Checkout Python
-        if: ${{ env.PYTHON_VERSION != '3.14' }}
-        uses: actions/checkout@v4
-        with:
-          repository: 'python/cpython'
-          path: "cpython"
-          ref: ${{ env.PYTHON_VERSION }}
-
-      - name: Checkout Python (No Explict Ref)
-        if: ${{ env.PYTHON_VERSION == '3.14' }}
-        uses: actions/checkout@v4
-        with:
-          repository: 'python/cpython'
-          path: "cpython"
 
       - name: Download and apply "picnixz"'s "fix/build/hacl-emscripten-133042" branch
         run: |
