@@ -9,6 +9,7 @@ on:
 env:
   EM_VERSION: 4.0.5
   EM_CACHE_FOLDER: "emsdk-cache"
+  PYTHON_VERSION: "3.14"
 
 jobs:
   build_site:
@@ -46,6 +47,7 @@ jobs:
         with:
           repository: 'python/cpython'
           path: "cpython"
+          ref: ${{ env.PYTHON_VERSION == '3.14' && 'master' || env.PYTHON_VERSION }}
 
       - name: Download and apply "picnixz"'s "fix/build/hacl-emscripten-133042" branch
         run: |
@@ -65,9 +67,9 @@ jobs:
 
       - name: Copy Emscripten Python
         run: |
-          cp cpython/cross-build/wasm32-emscripten/build/python/python*.zip  static
-          cp cpython/cross-build/wasm32-emscripten/build/python/python.wasm  static
-          cp cpython/cross-build/wasm32-emscripten/build/python/python.mjs   static
+          cp cpython/cross-build/wasm32-emscripten/build/python/python${{ env.PYTHON_VERSION }}.zip  static
+          cp cpython/cross-build/wasm32-emscripten/build/python/python.wasm                          static
+          cp cpython/cross-build/wasm32-emscripten/build/python/python.mjs                           static
 
       - name: build
         env:
