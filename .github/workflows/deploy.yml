@@ -9,7 +9,7 @@ on:
 env:
   EM_VERSION: 4.0.5
   #EM_CACHE_FOLDER: "emsdk-cache"
-  USE_CCACHE: 'false'
+  USE_CCACHE: 'true'
   CCACHE_DIR: "ccache-dir"
   PYTHON_VERSION: '3.14'
 
