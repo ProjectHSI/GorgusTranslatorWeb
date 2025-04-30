@@ -75,9 +75,9 @@ jobs:
 
       - name: Copy Emscripten Python
         run: |
-          cp cpython/cross-build/wasm32-emscripten/build/python/python${{ env.PYTHON_VERSION }}.zip  static
-          cp cpython/cross-build/wasm32-emscripten/build/python/python.wasm                          static
-          cp cpython/cross-build/wasm32-emscripten/build/python/python.mjs                           static
+          cp cpython/cross-build/wasm32-emscripten/build/python/web_example/python${{ env.PYTHON_VERSION }}.zip  static
+          cp cpython/cross-build/wasm32-emscripten/build/python/python.wasm                                      static
+          cp cpython/cross-build/wasm32-emscripten/build/python/python.mjs                                       static
 
       - name: build
         env:
