@@ -9,6 +9,7 @@ on:
 env:
   EM_VERSION: 4.0.5
   #EM_CACHE_FOLDER: "emsdk-cache"
+  USE_CCACHE: 'false'
   CCACHE_DIR: "ccache-dir"
   PYTHON_VERSION: '3.14'
 
@@ -19,7 +20,8 @@ jobs:
       - name: Update APT
         run: sudo apt-get update
 
-      - name: Install APT Dependencies
+      - name: Install CCache
+        if: USE_CCACHE == 'true'
         run: sudo apt-get install ccache -y
 
       - name: Setup cache
@@ -57,6 +59,7 @@ jobs:
         run: source ./emsdk/emsdk_env.sh
 
       - name: Use CCache
+        if: USE_CCACHE == 'true'
         run: export EM_COMPILER_WRAPPER=ccache CCACHE_DIR=${{ env.CCACHE_DIR }}
 
       - name: Checkout
