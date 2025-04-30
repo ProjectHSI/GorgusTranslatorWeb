@@ -21,7 +21,7 @@ jobs:
         run: sudo apt-get update
 
       - name: Install CCache
-        if: USE_CCACHE == 'true'
+        if: env.USE_CCACHE == 'true'
         run: sudo apt-get install ccache -y
 
       - name: Setup cache
@@ -59,7 +59,7 @@ jobs:
         run: source ./emsdk/emsdk_env.sh
 
       - name: Use CCache
-        if: USE_CCACHE == 'true'
+        if: env.USE_CCACHE == 'true'
         run: export EM_COMPILER_WRAPPER=ccache CCACHE_DIR=${{ env.CCACHE_DIR }}
 
       - name: Checkout
