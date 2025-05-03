@@ -55,45 +55,6 @@ jobs:
           repository: 'python/cpython'
           path: "cpython"
 
-      - name: Setup EMSDK Cache
-        id: cache-em-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            emsdk
-            ${{ env.EM_CACHE_FOLDER }}
-            ${{ env.CCACHE_DIR }}
-          key: emsdk-${{env.EM_VERSION}}-${{ runner.os }}
-
-      #- name: Setup EMSDK
-      #  uses: mymindstorm/setup-emsdk@v14
-      #  with:
-      #    version: ${{env.EM_VERSION}}
-      #    actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
-      #    no-cache: 'true'
-
-      - name: Checkout EMSDK
-        if: steps.cache-em-cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-        with:
-          repository: 'emscripten-core/emsdk'
-          path: "emsdk"
-
-      - name: Setup EMSDK
-        if: steps.cache-em-cache.outputs.cache-hit != 'true'
-        run: |
-          cd emsdk
-          ./emsdk install ${{ env.EM_VERSION }}
-          ./emsdk activate ${{ env.EM_VERSION }}
-          cd ..
-
-      - name: Add EMSDK to Environment
-        run: |
-          EMSDK_CMD=1 ./emsdk/emsdk construct_env
-          sed -i "s/SET //g" ./emsdk/emsdk_set_env.bat
-          mv ./emsdk/emsdk_set_env.bat ./emsdk/emsdk_set_env
-          cat ./emsdk/emsdk_set_env >> $GITHUB_ENV
-
       #- name: Print PATH
       #  run: |
       #    echo $PATH
@@ -128,6 +89,47 @@ jobs:
             **/config.cache
           key: cpython-config-cache-${{ runner.os }}
 
+      - name: Setup EMSDK Cache
+        if: steps.cache-cpython.outputs.cache-hit != 'true'
+        id: cache-em-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            emsdk
+            ${{ env.EM_CACHE_FOLDER }}
+            ${{ env.CCACHE_DIR }}
+          key: emsdk-${{env.EM_VERSION}}-${{ runner.os }}
+
+      #- name: Setup EMSDK
+      #  uses: mymindstorm/setup-emsdk@v14
+      #  with:
+      #    version: ${{env.EM_VERSION}}
+      #    actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+      #    no-cache: 'true'
+
+      - name: Checkout EMSDK
+        if: steps.cache-cpython.outputs.cache-hit != 'true' && steps.cache-em-cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: 'emscripten-core/emsdk'
+          path: "emsdk"
+
+      - name: Setup EMSDK
+        if: steps.cache-cpython.outputs.cache-hit != 'true' && steps.cache-em-cache.outputs.cache-hit != 'true'
+        run: |
+          cd emsdk
+          ./emsdk install ${{ env.EM_VERSION }}
+          ./emsdk activate ${{ env.EM_VERSION }}
+          cd ..
+
+      - name: Add EMSDK to Environment
+        if: steps.cache-cpython.outputs.cache-hit != 'true'
+        run: |
+          EMSDK_CMD=1 ./emsdk/emsdk construct_env
+          sed -i "s/SET //g" ./emsdk/emsdk_set_env.bat
+          mv ./emsdk/emsdk_set_env.bat ./emsdk/emsdk_set_env
+          cat ./emsdk/emsdk_set_env >> $GITHUB_ENV
+
       - name: Build Emscripten CPython
         if: steps.cache-cpython.outputs.cache-hit != 'true'
         run: ./get_python_wasm.ps1 ${{ env.PYTHON_VERSION }} $false
@@ -137,9 +139,9 @@ jobs:
         if: steps.cache-cpython.outputs.cache-hit == 'true'
         run: |
           New-Item -Type Directory ./src/lib/python/wasm
-          Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/web_example/python$tag.zip"  ./src/lib/python/wasm
-          Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/python.wasm"                 ./src/lib/python/wasm
-          Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/python.mjs"                  ./src/lib/python/wasm
+          Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/web_example/python${{ env.PYTHON_VERSION }}.zip"  ./src/lib/python/wasm
+          Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/python.wasm"                                      ./src/lib/python/wasm
+          Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/python.mjs"                                       ./src/lib/python/wasm
         shell: pwsh
 
       - name: Download PIP Dependencies
