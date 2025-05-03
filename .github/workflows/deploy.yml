@@ -26,6 +26,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
@@ -101,27 +103,20 @@ jobs:
         run: |
           echo "EM_COMPILER_WRAPPER=ccache" >> $GITHUB_ENV
 
-      - name: Download and apply "picnixz"'s "fix/build/hacl-emscripten-133042" branch
-        run: |
-          cd ${{ github.workspace }}/cpython
-          wget -O emscriptenFixBuildPatch.patch https://patch-diff.githubusercontent.com/raw/python/cpython/pull/133064.patch
-          git apply --index emscriptenFixBuildPatch.patch
-          cd ..
-
-      - name: Build Emscripten CPython
-        run: |
-          cd cpython
-          python Tools/wasm/emscripten build
-          cd ..
-
       - name: Install dependencies
         run: pnpm install
 
-      - name: Copy Emscripten Python
-        run: |
-          cp cpython/cross-build/wasm32-emscripten/build/python/web_example/python${{ env.PYTHON_VERSION }}.zip  src/lib/python
-          cp cpython/cross-build/wasm32-emscripten/build/python/python.wasm                                      src/lib/python
-          cp cpython/cross-build/wasm32-emscripten/build/python/python.mjs                                       src/lib/python
+      - name: Build Emscripten CPython
+        run: ./get_python_wasm.ps1 ${{ env.PYTHON_VERSION }} $false
+        shell: pwsh
+
+      - name: Download PIP Dependencies
+        run: ./get_python_wasm.ps1 ${{ env.PYTHON_VERSION }} $false
+        shell: pwsh
+
+      - name: Download NLTK Dependencies
+        run: ./download_nltk.ps1
+        shell: pwsh
 
       - name: build
         env:

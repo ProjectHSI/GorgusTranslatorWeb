@@ -1,9 +1,19 @@
 <script lang="ts">
 	import {RAIIPython} from "$lib/RAIIPython";
+    import { onMount } from 'svelte';
+    import {RAIITranslator} from "$lib/RAIITranslator";
+    //import { onMount } from ""
 
-    const raiiPython = new RAIIPython();
+    onMount(() => {
+        const raiiTranslator = new RAIITranslator(fetch,
+	        () => {
+                console.log("がめお！さと！")
+                raiiTranslator.translateToGorgus("JUDGEMENT!")
+            }
+            );
+    })
 
-    raiiPython.runModule();
+    //raiiPython.runModule();
 </script>
 
 <h1>Welcome to SvelteKit</h1>
