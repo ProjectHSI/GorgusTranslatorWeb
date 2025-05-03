@@ -89,6 +89,8 @@ export class RAIIPython {
 
                         // prevent the overlay from getting overlayed :tm:
                         if (library != "overlays" && library != "gorgus") {
+                            console.log(`Extracting library "${library}" to "lib/python3.14/packages/".`);
+
                             let jsZip = await JSZip.loadAsync(libraryResponseBuffer);
 
                             for (const jsZipFile of Object.keys(jsZip.files)) {
@@ -102,6 +104,8 @@ export class RAIIPython {
                                 //console.log(jsZipFile);
                             }
                         } else {
+                            console.log(`Saving library "${library}" to "lib/python3.14/packages/${library}.zip".`);
+
                             Module.FS.writeFile(`lib/python3.14/packages/${library}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
                             //console.log(`lib/python3.14/packages/${library}.zip`);
                         }
@@ -111,8 +115,9 @@ export class RAIIPython {
                 for (const nltkDataFile of nltkData) {
                     downloadPromises.push((async () => {
                         //console.log(`$lib/nltk/${nltkDataFile.directory}/${nltkDataFile.file}.zip?url`)
+                        console.log(`Saving NLTK Data "${nltkDataFile.directory + "." + nltkDataFile.file}" to "nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip".`);
 
-                        const combinedDataFile = nltkDataFile.directory + "." + nltkDataFile.file
+                        const combinedDataFile = nltkDataFile.directory + "." + nltkDataFile.file;
                         //const preProcessUrl = `./nltk/${nltkDataFile.directory}/${nltkDataFile.file}.zip?url`;
 
                         const libraryUrl = await import(`./nltk/${combinedDataFile}.zip?url`);
