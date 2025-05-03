@@ -111,7 +111,7 @@ jobs:
         shell: pwsh
 
       - name: Download PIP Dependencies
-        run: ./get_python_wasm.ps1 ${{ env.PYTHON_VERSION }} $false
+        run: ./download_pip.ps1
         shell: pwsh
 
       - name: Download NLTK Dependencies
