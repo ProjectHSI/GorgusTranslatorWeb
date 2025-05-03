@@ -78,7 +78,7 @@ export class RAIIPython {
                         const scriptText = await import(`$lib/python_scripts/${script}.py?raw`);
                         Module.FS.writeFile(`${script}.py`, scriptText.default, { canOwn: true });
                     })());
-                    //await Promise.all(downloadPromises);
+                    await Promise.all(downloadPromises);
                 }
                 for (const library of libraries) {
                     downloadPromises.push((async () => {
@@ -108,9 +108,10 @@ export class RAIIPython {
 
                             Module.FS.writeFile(`lib/python3.14/packages/${library}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
                             //console.log(`lib/python3.14/packages/${library}.zip`);
+
                         }
                     })());
-                    //await Promise.all(downloadPromises);
+                    await Promise.all(downloadPromises);
                 }
                 for (const nltkDataFile of nltkData) {
                     downloadPromises.push((async () => {
@@ -126,6 +127,7 @@ export class RAIIPython {
                         Module.FS.mkdir(`nltk_data/${nltkDataFile.directory}`)
                         Module.FS.writeFile(`nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip`, new Uint8Array(await libraryResponse.arrayBuffer()), {canOwn: true});
                     })());
+                    await Promise.all(downloadPromises);
                 }
 
                 await Promise.all(downloadPromises);
