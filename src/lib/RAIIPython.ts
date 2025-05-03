@@ -65,9 +65,9 @@ export class RAIIPython {
                 Module.FS.mkdir("/home/web_user/gorgus/");
 
                 Module.FS.chdir("/home/web_user/gorgus/");
-                Module.FS.mkdirTree(`lib/python3.14/lib-dynload/`);
-                Module.FS.mkdirTree(`lib/python3.14/packages/`);
-                Module.FS.mkdirTree(`nltk_data`);
+                Module.FS.mkdirTree(`/home/web_user/gorgus/lib/python3.14/lib-dynload/`);
+                Module.FS.mkdirTree(`/home/web_user/gorgus/lib/python3.14/packages/`);
+                Module.FS.mkdirTree(`/home/web_user/gorgus/nltk_data`);
 
                 console.log(Module);
 
@@ -78,7 +78,7 @@ export class RAIIPython {
 
                     downloadPromises.push((async () => {
                         const scriptText = await import(`$lib/python_scripts/${script}.py?raw`);
-                        Module.FS.writeFile(`${script}.py`, scriptText.default, { canOwn: true });
+                        Module.FS.writeFile(`/home/web_user/gorgus/${script}.py`, scriptText.default, { canOwn: true });
                     })());
                     await Promise.all(downloadPromises);
                 }
@@ -91,7 +91,7 @@ export class RAIIPython {
 
                         // prevent the overlay from getting overlayed :tm:
                         if (library != "overlays" && library != "gorgus") {
-                            console.log(`Extracting library "${library}" to "lib/python3.14/packages/".`);
+                            console.log(`Extracting library "${library}" to "/home/web_user/gorgus/lib/python3.14/packages/".`);
 
                             let jsZip = await JSZip.loadAsync(libraryResponseBuffer);
 
@@ -103,14 +103,14 @@ export class RAIIPython {
 
                                 const splitFileName = jsZipFile.split("/");
 
-                                Module.FS.mkdirTree(`lib/python3.14/packages/${splitFileName.slice(0, splitFileName.length - 1).join("/")}`);
-                                Module.FS.writeFile(`lib/python3.14/packages/${jsZipFile}`, await jsZip.files[jsZipFile].async("uint8array"));
+                                Module.FS.mkdirTree(`/home/web_user/gorgus/lib/python3.14/packages/${splitFileName.slice(0, splitFileName.length - 1).join("/")}`);
+                                Module.FS.writeFile(`/home/web_user/gorgus/lib/python3.14/packages/${jsZipFile}`, await jsZip.files[jsZipFile].async("uint8array"));
                                 //console.log(jsZipFile);
                             }
                         } else {
                             console.log(`Saving library "${library}" to "lib/python3.14/packages/${library}.zip".`);
 
-                            Module.FS.writeFile(`lib/python3.14/packages/${library}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
+                            Module.FS.writeFile(`/home/web_user/gorgus/lib/python3.14/packages/${library}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
                             //console.log(`lib/python3.14/packages/${library}.zip`);
 
                         }
@@ -128,8 +128,8 @@ export class RAIIPython {
                         const libraryUrl = await import(`./nltk/${combinedDataFile}.zip?url`);
                         const libraryResponse = await fetchFunction(libraryUrl.default);
 
-                        Module.FS.mkdir(`nltk_data/${nltkDataFile.directory}`)
-                        Module.FS.writeFile(`nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip`, new Uint8Array(await libraryResponse.arrayBuffer()), {canOwn: true});
+                        Module.FS.mkdir(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}`)
+                        Module.FS.writeFile(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip`, new Uint8Array(await libraryResponse.arrayBuffer()), {canOwn: true});
                     })());
                     await Promise.all(downloadPromises);
                 }
