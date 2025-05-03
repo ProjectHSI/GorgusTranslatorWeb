@@ -15,7 +15,7 @@ if ($clone -eq $true) {
     git clone https://github.com/python/cpython
 }
 
-cd cpython
+Set-Location cpython
 
 Invoke-WebRequest https://patch-diff.githubusercontent.com/raw/python/cpython/pull/133064.patch -OutFile emscriptenFixBuildPatch.patch
 git apply --index emscriptenFixBuildPatch.patch
@@ -31,9 +31,9 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-mkdir ../src/lib/python/wasm
-cp "cross-build/wasm32-emscripten/build/python/web_example/python$tag.zip"  ../src/lib/python/wasm
-cp "cross-build/wasm32-emscripten/build/python/python.wasm"                 ../src/lib/python/wasm
-cp "cross-build/wasm32-emscripten/build/python/python.mjs"                  ../src/lib/python/wasm
+New-Item -Type Directory ../src/lib/python/wasm
+Copy-Item "cross-build/wasm32-emscripten/build/python/web_example/python$tag.zip"  ../src/lib/python/wasm
+Copy-Item "cross-build/wasm32-emscripten/build/python/python.wasm"                 ../src/lib/python/wasm
+Copy-Item "cross-build/wasm32-emscripten/build/python/python.mjs"                  ../src/lib/python/wasm
 
-cd ..
+Set-Location ..
