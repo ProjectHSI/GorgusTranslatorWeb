@@ -69,6 +69,8 @@ export class RAIIPython {
                 Module.FS.mkdirTree(`lib/python3.14/packages/`);
                 Module.FS.mkdirTree(`nltk_data`);
 
+                console.log(Module);
+
                 const downloadPromises: Promise<void>[] = []
 
                 for (const script of scripts) {
