@@ -69,7 +69,7 @@ export class RAIIPython {
                 Module.FS.mkdirTree(`/home/web_user/gorgus/lib/python3.14/packages/`);
                 Module.FS.mkdirTree(`/home/web_user/gorgus/nltk_data`);
 
-                console.log(Module);
+                //console.log(Module);
 
                 const downloadPromises: Promise<void>[] = []
 
@@ -80,7 +80,7 @@ export class RAIIPython {
                         const scriptText = await import(`$lib/python_scripts/${script}.py?raw`);
                         Module.FS.writeFile(`/home/web_user/gorgus/${script}.py`, scriptText.default, { canOwn: true });
                     })());
-                    await Promise.all(downloadPromises);
+                    //await Promise.all(downloadPromises);
                 }
                 for (const library of libraries) {
                     downloadPromises.push((async () => {
@@ -96,7 +96,7 @@ export class RAIIPython {
                             let jsZip = await JSZip.loadAsync(libraryResponseBuffer);
 
                             for (const jsZipFile of Object.keys(jsZip.files)) {
-                                console.log(jsZipFile);
+                                //console.log(jsZipFile);
 
                                 if (jsZip.files[jsZipFile].dir)
                                     continue;
@@ -115,7 +115,7 @@ export class RAIIPython {
 
                         }
                     })());
-                    await Promise.all(downloadPromises);
+                    //await Promise.all(downloadPromises);
                 }
                 for (const nltkDataFile of nltkData) {
                     downloadPromises.push((async () => {
@@ -131,7 +131,7 @@ export class RAIIPython {
                         Module.FS.mkdir(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}`)
                         Module.FS.writeFile(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip`, new Uint8Array(await libraryResponse.arrayBuffer()), {canOwn: true});
                     })());
-                    await Promise.all(downloadPromises);
+                    //await Promise.all(downloadPromises);
                 }
 
                 await Promise.all(downloadPromises);
