@@ -106,7 +106,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Get Git Hash of CPython
+        run: |
+          cd cpython
+          echo "CPYTHON_GIT_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          cd ..
+
+      - name: Setup CPython Cache
+        id: cache-cpython
+        uses: actions/cache@v4
+        with:
+          path: cpython
+          key: cpython-${{ env.CPYTHON_GIT_HASH }}-cache-${{ runner.os }}
+
       - name: Setup CPython Config Cache
+        if: steps.cache-cpython.outputs.cache-hit != 'true'
         id: cache-cpython-config-cache
         uses: actions/cache@v4
         with:
@@ -115,7 +129,17 @@ jobs:
           key: cpython-config-cache-${{ runner.os }}
 
       - name: Build Emscripten CPython
+        if: steps.cache-cpython.outputs.cache-hit != 'true'
         run: ./get_python_wasm.ps1 ${{ env.PYTHON_VERSION }} $false
+        shell: pwsh
+
+      - name: Manually Copy CPython
+        if: steps.cache-cpython.outputs.cache-hit == 'true'
+        run: |
+          New-Item -Type Directory ./src/lib/python/wasm
+          Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/web_example/python$tag.zip"  ./src/lib/python/wasm
+          Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/python.wasm"                 ./src/lib/python/wasm
+          Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/python.mjs"                  ./src/lib/python/wasm
         shell: pwsh
 
       - name: Download PIP Dependencies

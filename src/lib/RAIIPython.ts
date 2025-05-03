@@ -94,6 +94,8 @@ export class RAIIPython {
                             let jsZip = await JSZip.loadAsync(libraryResponseBuffer);
 
                             for (const jsZipFile of Object.keys(jsZip.files)) {
+                                console.log(jsZipFile);
+
                                 if (jsZip.files[jsZipFile].dir)
                                     continue;
 
