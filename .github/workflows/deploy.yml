@@ -77,7 +77,7 @@ jobs:
         id: cache-cpython
         uses: actions/cache@v4
         with:
-          path: cpython
+          path: cpython/cross-build/
           key: cpython-${{ env.CPYTHON_GIT_HASH }}-cache-${{ runner.os }}
 
       - name: Setup CPython Config Cache
