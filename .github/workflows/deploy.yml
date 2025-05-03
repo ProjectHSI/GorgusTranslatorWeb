@@ -55,7 +55,7 @@ jobs:
           repository: 'python/cpython'
           path: "cpython"
 
-      - name: Setup cache
+      - name: Setup EMSDK Cache
         id: cache-em-cache
         uses: actions/cache@v4
         with:
@@ -106,7 +106,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Setup cache
+      - name: Setup CPython Config Cache
         id: cache-cpython-config-cache
         uses: actions/cache@v4
         with:
