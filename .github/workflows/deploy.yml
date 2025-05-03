@@ -106,6 +106,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Setup cache
+        id: cache-cpython-config-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/config.cache
+          key: cpython-config-cache-${{ runner.os }}
+
       - name: Build Emscripten CPython
         run: ./get_python_wasm.ps1 ${{ env.PYTHON_VERSION }} $false
         shell: pwsh
