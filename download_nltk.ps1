@@ -1,7 +1,7 @@
 [xml]$nltkIndexXml = Invoke-WebRequest https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/index.xml
 #$nltkIndexXml = $nltkIndexString
 
-$packagesToDownload = @( "corpora/wordnet.zip" )
+$packagesToDownload = @( "corpora/wordnet.zip", "corpora/brown.zip" )
 
 #Write-Host $nltkIndexString
 $nltkData = $nltkIndexXml.ChildNodes[2]
