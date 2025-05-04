@@ -74,13 +74,13 @@ export class RAIIPython {
                 const downloadPromises: Promise<void>[] = []
 
                 for (const script of scripts) {
-                    //console.log(script);
+                    console.log(script);
 
                     downloadPromises.push((async () => {
                         const scriptText = await import(`$lib/python_scripts/${script}.py?raw`);
                         Module.FS.writeFile(`/home/web_user/gorgus/${script}.py`, scriptText.default, { canOwn: true });
                     })());
-                    //await Promise.all(downloadPromises);
+                    await Promise.all(downloadPromises);
                 }
                 for (const library of libraries) {
                     downloadPromises.push((async () => {
@@ -103,9 +103,10 @@ export class RAIIPython {
 
                                 const splitFileName = jsZipFile.split("/");
 
+                                console.log(jsZipFile);
                                 Module.FS.mkdirTree(`/home/web_user/gorgus/lib/python3.14/packages/${splitFileName.slice(0, splitFileName.length - 1).join("/")}`);
                                 Module.FS.writeFile(`/home/web_user/gorgus/lib/python3.14/packages/${jsZipFile}`, await jsZip.files[jsZipFile].async("uint8array"));
-                                //console.log(jsZipFile);
+                                //
                             }
                         } else {
                             console.log(`Saving library "${library}" to "lib/python3.14/packages/${library}.zip".`);
@@ -115,7 +116,7 @@ export class RAIIPython {
 
                         }
                     })());
-                    //await Promise.all(downloadPromises);
+                    await Promise.all(downloadPromises);
                 }
                 for (const nltkDataFile of nltkData) {
                     downloadPromises.push((async () => {
@@ -127,11 +128,28 @@ export class RAIIPython {
 
                         const libraryUrl = await import(`./nltk/${combinedDataFile}.zip?url`);
                         const libraryResponse = await fetchFunction(libraryUrl.default);
+                        const libraryResponseBuffer = await libraryResponse.arrayBuffer();
 
-                        Module.FS.mkdir(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}`)
-                        Module.FS.writeFile(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip`, new Uint8Array(await libraryResponse.arrayBuffer()), {canOwn: true});
+                        let jsZip = await JSZip.loadAsync(libraryResponseBuffer);
+
+                        for (const jsZipFile of Object.keys(jsZip.files)) {
+                            //console.log(jsZipFile);
+
+                            if (jsZip.files[jsZipFile].dir)
+                                continue;
+
+                            const splitFileName = jsZipFile.split("/");
+
+                            console.log(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${jsZipFile}`);
+                            Module.FS.mkdirTree(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${splitFileName.slice(0, splitFileName.length - 1).join("/")}`);
+                            Module.FS.writeFile(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${jsZipFile}`, await jsZip.files[jsZipFile].async("uint8array"));
+                            //
+                        }
+
+                        Module.FS.mkdirTree(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}`)
+                        Module.FS.writeFile(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
                     })());
-                    //await Promise.all(downloadPromises);
+                    await Promise.all(downloadPromises);
                 }
 
                 await Promise.all(downloadPromises);

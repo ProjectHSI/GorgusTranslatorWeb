@@ -18,7 +18,7 @@ print(urllib.request)
 #import os
 import translater
 
-translater.translate("this is a test", "gorgus")
+print(translater.translate("this is a test", "gorgus"))
 
 #print(os.getcwd())
 
