@@ -6,10 +6,12 @@ import pyStdLibZip from '$lib/python/wasm/python3.14.zip?url'
 import JSZip from "jszip"
 
 import {libraries, nltkData, scripts} from "$lib/fsSetup.compile"
+import {PythonWorker} from "$lib/PythonWorker.Types";
+//import {monitorEventLoopDelay} from "node:perf_hooks";
 
 //console.log(libraries);
 
-export class RAIIPython {
+class _PythonWorker {
     get pythonVersionMinor(): number {
         return this._pythonVersionMinor;
     }
@@ -27,13 +29,35 @@ export class RAIIPython {
     private preRunReady = false;
     //private emscriptenRuntimeReady = false;
 
+    currentStdin: SharedArrayBuffer = new SharedArrayBuffer(4096);
+    private currentStdinInt32: Int32Array = new Int32Array<ArrayBufferLike>(this.currentStdin);
+    private readIndex = 0;
+    private returnedNull: number = true;
+
+    //stdin(): number | null {
+
+
+        //Atomics.
+
+        //console.log(stdinString);
+
+        //if (this.currentStdin != "")
+            //this.currentStdin = stdinString;
+        //else
+            //this.currentStdin += stdinString;
+    //}
+
+    private static returnedNullTimes = 2;
+
     private createEmscriptenProperties(fetchFunction: (arg0: string) => Promise<Response>) {
-        let emscriptenRuntimeReady = false;
+        let emscriptenRuntimeReady = true;
         let prerunReady = false;
 
         const runtimeReady = () => {
             if (emscriptenRuntimeReady && prerunReady) {
                 this.emscriptenRuntimeReady = true;
+
+                console.log("Runtime ready!");
 
                 if (this.runtimeReadyCallback)
                     this.runtimeReadyCallback();
@@ -42,15 +66,78 @@ export class RAIIPython {
             //console.log("kill everybody");
         }
 
+        const popStdin = () => {
+            //console.log("we called")
+
+            try {
+                if (this.returnedNull) {
+                    if (this.returnedNull != _PythonWorker.returnedNullTimes) {
+                        this.returnedNull += 1;
+                        return null;
+                    }
+
+                    this.returnedNull = 0;
+
+                    //console.log("i sleep");
+
+                    this.currentStdinInt32[0] = 0;
+
+                    // The primary purpose of this action is the "wait", not the comparison. THe comparison is just to check that it's actually set correctly.
+                    const atomicWaitResult = Atomics.wait(this.currentStdinInt32, 0, 0);
+                    //console.log(atomicWaitResult);
+                    //if ( == "ok") {
+                        //throw new Error("Logic Error #1 - _PythonWorker.stdin()")
+                    //}
+
+                    //console.log("we going man");
+
+                    this.readIndex = 0;
+
+                    return null;
+                }
+
+                //console.log("branch 1")
+
+                if (this.readIndex == Atomics.load(this.currentStdinInt32, 0)) {
+                    console.log("end of stdin")
+
+                    this.returnedNull += 1;
+                    // we can receive new data
+                    Atomics.notify(this.currentStdinInt32, 0);
+                    return null;
+                }
+
+                //console.log("branch 2")
+
+                //console.log(this.readIndex);
+                this.readIndex = this.readIndex + 1;
+                //console.log(this.readIndex);
+                return Atomics.load(this.currentStdinInt32, this.readIndex);
+            } catch (e) {
+                console.log("caught excpetion in popStdin");
+                console.log(e);
+                //debugger;
+                return null;
+            }
+        };
+
         return {
             noInitialRun: true,
             onRuntimeInitialized: () => {
-                emscriptenRuntimeReady = true;
-                runtimeReady();
+                //emscriptenRuntimeReady = true;
+
+                //console.log("Runtime ready!");
+
+                //runtimeReady();
             },
             print: (event: any) => {
+                postMessage({
+                    command_type: PythonWorker.CommandType.VM_Stdout,
+                    stream_text: event
+                } as PythonWorker.StdStreamEvent);
                 console.log(event);
             },
+            stdin: popStdin,
             async preRun(Module: any): Promise<void> {
                 //console.log(Module)
                 //console.log(Module.HEAPU32);
@@ -77,14 +164,14 @@ export class RAIIPython {
                     console.log(script);
 
                     downloadPromises.push((async () => {
-                        const scriptText = await import(`$lib/python_scripts/${script}.py?raw`);
+                        const scriptText = await import(`./python_scripts/${script}.py?raw`);
                         Module.FS.writeFile(`/home/web_user/gorgus/${script}.py`, scriptText.default, { canOwn: true });
                     })());
-                    await Promise.all(downloadPromises);
+                    //await Promise.all(downloadPromises);
                 }
                 for (const library of libraries) {
                     downloadPromises.push((async () => {
-                        const libraryUrl = await import(`$lib/python/lib/${library}.zip?url`);
+                        const libraryUrl = await import(`./python/lib/${library}.zip?url`);
                         const libraryResponse = await fetchFunction(libraryUrl.default);
 
                         const libraryResponseBuffer = await libraryResponse.arrayBuffer();
@@ -103,7 +190,7 @@ export class RAIIPython {
 
                                 const splitFileName = jsZipFile.split("/");
 
-                                console.log(jsZipFile);
+                                //console.log(jsZipFile);
                                 Module.FS.mkdirTree(`/home/web_user/gorgus/lib/python3.14/packages/${splitFileName.slice(0, splitFileName.length - 1).join("/")}`);
                                 Module.FS.writeFile(`/home/web_user/gorgus/lib/python3.14/packages/${jsZipFile}`, await jsZip.files[jsZipFile].async("uint8array"));
                                 //
@@ -116,7 +203,7 @@ export class RAIIPython {
 
                         }
                     })());
-                    await Promise.all(downloadPromises);
+                    //await Promise.all(downloadPromises);
                 }
                 for (const nltkDataFile of nltkData) {
                     downloadPromises.push((async () => {
@@ -140,7 +227,7 @@ export class RAIIPython {
 
                             const splitFileName = jsZipFile.split("/");
 
-                            console.log(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${jsZipFile}`);
+                            //console.log(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${jsZipFile}`);
                             Module.FS.mkdirTree(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${splitFileName.slice(0, splitFileName.length - 1).join("/")}`);
                             Module.FS.writeFile(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${jsZipFile}`, await jsZip.files[jsZipFile].async("uint8array"));
                             //
@@ -149,14 +236,16 @@ export class RAIIPython {
                         Module.FS.mkdirTree(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}`)
                         Module.FS.writeFile(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
                     })());
-                    await Promise.all(downloadPromises);
+                    //await Promise.all(downloadPromises);
                 }
 
                 await Promise.all(downloadPromises);
 
-                Module.ENV.NLTK_DATA = "/home/web_user/gorgus/nltk_data/"
+                //Module.ENV.NLTK_DATA = "/home/web_user/gorgus/nltk_data/"
 
                 Module.addRunDependency("install-stdlib");
+                //console.log(Module.HEAPU8)
+
                 const stdLibZip = await fetchFunction(pyStdLibZip);
                 const stdLibBuffer = await stdLibZip.arrayBuffer();
                 Module.FS.writeFile(`lib/python314.zip`, new Uint8Array(stdLibBuffer), {canOwn: true});
@@ -180,14 +269,59 @@ export class RAIIPython {
 
         this.emscriptenModule = createEmscriptenModule(this.createEmscriptenProperties(fetchFunction));
 
-        console.log("...")
+        //console.log("...")
     };
 
     async runModule(args: string[]) {
         let Module = await this.emscriptenModule;
 
-        const ret = Module.callMain(args);
+        //console.log("running main()")
+        Module.callMain(args);
 
-        return ret;
+        //return ret;
+    }
+
+    //async stopModule() {
+        //Module.
+    //}
+}
+
+let currentPythonWorker: _PythonWorker | undefined = undefined;
+
+onmessage = async (e: MessageEvent<PythonWorker.Command>) => {
+    console.log(e.data)
+
+    switch (e.data.command_type) {
+        case PythonWorker.CommandType.Startup_VM:
+            currentPythonWorker = new _PythonWorker(fetch, () => { postMessage(
+                {
+                    command_type: PythonWorker.CommandType.VM_Ready,
+                    stdInBuffer: currentPythonWorker?.currentStdin
+                } as PythonWorker.ReadyEvent)
+            });
+
+            break;
+        case PythonWorker.CommandType.Run_VM:
+            if (currentPythonWorker == undefined)
+                throw new Error("PythonWorker not created. Use the Startup_VM command first.");
+
+            // @ts-ignore
+            currentPythonWorker.runModule(e.data.args).then(r => {});
+
+            break;
+        case PythonWorker.CommandType.VM_Stdin:
+            if (currentPythonWorker == undefined)
+                throw new Error("PythonWorker not created. Use the Startup_VM command first.");
+
+            //console.log("beepbop")
+
+            // @ts-ignore
+            currentPythonWorker.stdin(e.data.stream_text);
+
+            break;
+        case PythonWorker.CommandType.Shutdown_VM:
+            currentPythonWorker = undefined
+
+            break;
     }
 }

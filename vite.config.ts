@@ -19,6 +19,11 @@ export default defineConfig({
 		//sourcemap: "inline"
 	},
 	server: {
+		headers: {
+			// add COEP header to vite-served modules
+			'Cross-Origin-Embedder-Policy': 'require-corp',
+			'Cross-Origin-Opener-Policy': 'same-origin'
+		},
 		watch: {
 			ignored: ["**/python/**"], // infinite hmr updates otherwise
 

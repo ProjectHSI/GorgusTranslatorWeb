@@ -27,3 +27,5 @@ src/lib/ntlk/*
 
 /Gorgus-Translator/
 /cpython/
+
+static/coi-serviceworker.js

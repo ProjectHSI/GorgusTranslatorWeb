@@ -1,0 +1,41 @@
+export namespace PythonWorker {
+    export enum CommandType {
+        Startup_VM,
+        Run_VM,
+        VM_Stdin,
+        Shutdown_VM,
+
+        VM_Ready,
+        VM_Stdout,
+    }
+
+    export interface StartupCommand {
+        command_type: CommandType.Startup_VM;
+    }
+
+    export interface RunCommand {
+        command_type: CommandType.Run_VM;
+        args: string[];
+    }
+
+    export interface StdStreamEvent {
+        command_type: CommandType.VM_Stdin | CommandType.VM_Stdout;
+        stream_text: string;
+    }
+
+    export interface ShutdownCommand {
+        command_type: CommandType.Shutdown_VM;
+    }
+
+    export interface ReadyEvent {
+        command_type: CommandType.VM_Ready;
+        stdInBuffer: SharedArrayBuffer;
+    }
+
+    export type Command =
+        StartupCommand |
+        RunCommand |
+        StdStreamEvent |
+        ShutdownCommand |
+        ReadyEvent;
+}
