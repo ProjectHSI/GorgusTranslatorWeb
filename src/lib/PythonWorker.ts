@@ -7,9 +7,17 @@ import JSZip from "jszip"
 
 import {libraries, nltkData, scripts} from "$lib/fsSetup.compile";
 
-console.log(libraries);
-console.log(nltkData);
-console.log(scripts);
+for (const library of libraries) {
+    import(`./src/lib/python/lib/${library}.zip?url`)
+}
+
+for (const nltkDatum of nltkData) {
+    import(`./src/lib/nltk/${nltkDatum.directory}/${nltkDatum.file}.zip?url`)
+}
+
+for (const script of scripts) {
+    import(`./src/lib/python_scripts/${script}.py?raw`)
+}
 
 import {PythonWorker} from "$lib/PythonWorker.Types";
 //import {monitorEventLoopDelay} from "node:perf_hooks";
