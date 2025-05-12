@@ -4,7 +4,7 @@ import compileTime from "vite-plugin-compile-time"
 import topLevelAwait from "vite-plugin-top-level-await";
 
 export default defineConfig({
-	plugins: [compileTime(), topLevelAwait(), sveltekit()],
+	plugins: [{...compileTime(), enforce: "pre"}, topLevelAwait(), sveltekit()],
 
 	/*test: {
 		include: ['src/!**!/!*.{test,spec}.{js,ts}']
