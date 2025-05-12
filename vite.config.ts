@@ -11,7 +11,7 @@ export default defineConfig({
 		promiseImportName: i => `__tla_${i}`
 	}), sveltekit()],
 
-	assetsInclude: ["**/python/lib/**", "**/python/wasm/**"],
+	assetsInclude: ["./src/lib/python/lib/*.zip", "./src/lib/python/wasm/*.zip"],
 
 	/*test: {
 		include: ['src/!**!/!*.{test,spec}.{js,ts}']
