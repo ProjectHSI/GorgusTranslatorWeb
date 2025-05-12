@@ -13,6 +13,8 @@ if (!fs.existsSync("./src/lib/python/lib"))
     fs.mkdirSync("./src/lib/python/lib");
 
 async function generateZip(archivePath: string, zip: JSZip): Promise<void> {
+    console.log(archivePath);
+
     return new Promise((resolve, reject) => {
         fs.writeFileSync(archivePath, "");
 
