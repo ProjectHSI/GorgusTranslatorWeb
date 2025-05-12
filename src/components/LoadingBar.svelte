@@ -44,6 +44,8 @@
 	  color: white;
 	  z-index: 2;
 	  font-size: 1em;
+	  padding-top: 0.1%;
+	  padding-bottom: 0.1%;
 	}
 
 	.loadingBarShine {

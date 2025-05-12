@@ -101,9 +101,29 @@ export class RAIITranslator {
         }
     }
 
-    private translationOutputRegex = new RegExp("\\[GTW_O]: \\[TO]: \\[([EG])] \\{(.*)} \\{(.*)}");
+    private translationOutputRegex = new RegExp("\\[GTW_O]: \\[TO]: \\[([EG]) \\[(!?)F]] \\{(.*)} \\{(.*)}");
 
-    translateToGorgus(stringToTranslate: string): Promise<string> {
+    private stdin(feedToStdIn: string) {
+        if (!this.vmActive || this.pythonWorkerStdIn == undefined || this.pythonWorkerStdInInt32 == undefined) {
+            console.log(this.vmActive, this.pythonWorkerStdIn, this.pythonWorkerStdInInt32)
+            throw new Error("bruh");
+        }
+
+        if (this.pythonWorkerStdIn.byteLength < 4 + feedToStdIn.length * 4)
+            if (this.pythonWorkerStdIn.maxByteLength <= 4 + feedToStdIn.length * 4 && this.pythonWorkerStdIn.growable)
+                this.pythonWorkerStdIn.grow(4 + feedToStdIn.length * 4);
+            else
+                throw new Error("we're doomed");
+
+        for (let i = 0; i < feedToStdIn.length; i++) {
+            this.pythonWorkerStdInInt32[i + 1] = feedToStdIn.charCodeAt(i);
+        }
+
+        this.pythonWorkerStdInInt32[0] = feedToStdIn.length;
+        Atomics.notify(this.pythonWorkerStdInInt32, 0);
+    }
+
+    translate(stringToTranslate: string, target: string, formal: boolean = true): Promise<string> {
         //this.stdoutPromises[{ type: "G", text: stringToTranslate }] = new Promise();
 
         return new Promise<string>((resolve, reject) => {
@@ -115,37 +135,22 @@ export class RAIITranslator {
             this.stdoutCallbacks.push((data) => {
                 let translationOutput = this.translationOutputRegex.exec(data);
 
-                //console.log("raw", data);
-                //console.log("to", translationOutput);
-                //console.log("target", stringToTranslate);
-
                 if (translationOutput == null)
                     return;
 
-                if (translationOutput[1] == "G" && translationOutput[2] == stringToTranslate) {
-                    console.log("yay folks")
-                    resolve(translationOutput[3]);
+                if (translationOutput[1] == target && translationOutput[2] == (!formal ? "!" : "") && translationOutput[3] == stringToTranslate) {
+                    console.log("yay folks");
+                    resolve(translationOutput[4]);
                 }
             });
 
-            let feedToStdIn = `[GTW_I]: [G]: {${stringToTranslate}}`;
+            this.stdin(`[GTW_I]: [${target} [${!formal ? "!" : ""}F]]: {${stringToTranslate}}`);
 
             //console.log(stringToTranslate)
 
             //console.log(`[GTW_I]: [G]: {${stringToTranslate}}`);
 
-            if (this.pythonWorkerStdIn.byteLength < 4 + feedToStdIn.length * 4)
-                if (this.pythonWorkerStdIn.maxByteLength <= 4 + feedToStdIn.length * 4 && this.pythonWorkerStdIn.growable)
-                    this.pythonWorkerStdIn.grow(4 + feedToStdIn.length * 4);
-                else
-                    throw new Error("we're doomed");
 
-            for (let i = 0; i < feedToStdIn.length; i++) {
-                this.pythonWorkerStdInInt32[i + 1] = feedToStdIn.charCodeAt(i);
-            }
-
-            this.pythonWorkerStdInInt32[0] = feedToStdIn.length;
-            Atomics.notify(this.pythonWorkerStdInInt32, 0);
             //this.pythonWorkerStdInInt32
 
             //this.pythonWorkerStdIn

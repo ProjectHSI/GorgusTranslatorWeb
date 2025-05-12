@@ -24,7 +24,8 @@ import urllib
 #import os
 import translater
 
-translate_re = re.compile("\\[GTW_I]: \\[([EG])]: \\{(.*)}")
+#translate_re_e = re.compile("\\[GTW_I]: \\[(E)]: \\{(.*)}")
+translate_re = re.compile("\\[GTW_I]: \\[([EG]) \\[(!?)F]]: \\{(.*)}")
 
 print('[GTW_O]: runtime_ready')
 
@@ -37,7 +38,7 @@ while True:
     except EOFError:
         #print("received eof!")
         continue # try again
-   #print(line)
+    print(line)
 
     #print("sanity")
 
@@ -52,10 +53,15 @@ while True:
 
     translate_re_match = translate_re.match(line.rstrip())
 
+    #print(translate_re_match[1])
+    #print(translate_re_match[2])
+    #print(translate_re_match[3])
+    #print(translate_re_match[4])
+
     if translate_re_match is not None:
         #print("translate branch")
         #if translate_re_match[1] == "G":
-        print("[GTW_O]: [TO]: [" + translate_re_match[1] + "] {" + translate_re_match[2] + "} {" + translater.translate(translate_re_match[2], "gorgus" if translate_re_match[1] == "G" else "english") + "}")
+        print("[GTW_O]: [TO]: [" + translate_re_match[1] + " [" + translate_re_match[2] + "F]] {" + translate_re_match[3] + "} {" + translater.translate(translate_re_match[3], "gorgus" if translate_re_match[1] == "G" else "english", translate_re_match[2] != "!", False) + "}")
         #print(translate_re_match[1], translate_re_match[2])
     else:
         print("[GTW_O]: [IW]: Invalid command! (didn't match any regex)")
@@ -68,5 +74,5 @@ print("exit")
 
 #print(os.getcwd())
 
-#print(sys.argv[1])
+#print(sys.argv[1]
 #print(ntlk.word_tokenize(sys.argv[1]))
