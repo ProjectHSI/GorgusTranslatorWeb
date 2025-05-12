@@ -1,3 +1,6 @@
+//if (window == undefined)
+    //throw new Error("CATEGORY 4 PROBLEM - compiletime script running in browser!")
+
 import * as fs from "node:fs";
 import JSZip from "jszip";
 

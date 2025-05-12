@@ -1,4 +1,4 @@
-import RAIIPythonWorker from "$lib/PythonWorker?worker";
+//import RAIIPythonWorker from "$lib/PythonWorker?worker";
 import {PythonWorker} from "$lib/PythonWorker.Types";
 import CommandType = PythonWorker.CommandType;
 
@@ -10,7 +10,7 @@ interface TranslationRequest {
 }
 
 export class RAIITranslator {
-    private pythonWorker: RAIIPythonWorker | undefined = undefined;
+    private pythonWorker: Worker | undefined = undefined;
     private vmActive: boolean = false;
     private pythonWorkerStdIn: SharedArrayBuffer | undefined = undefined;
     private pythonWorkerStdInInt32: Int32Array | undefined = undefined;
@@ -23,9 +23,11 @@ export class RAIITranslator {
     }
 
     constructor(fetchFunction: (arg0: string) => Promise<Response>, _runtimeReadyCallback?: (() => void)) {
-        console.log("testo")
+        //console.log("testo")
 
-        this.pythonWorker = new RAIIPythonWorker();
+        this.pythonWorker = new Worker(new URL('./PythonWorker', import.meta.url), {
+            type: import.meta.env.DEV ? 'module' : 'classic'
+        });
 
         this.pythonWorker.onmessage = (e: MessageEvent<PythonWorker.Command>) => {
             switch (e.data.command_type) {

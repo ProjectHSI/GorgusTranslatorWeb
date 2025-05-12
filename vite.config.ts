@@ -4,15 +4,20 @@ import compileTime from "vite-plugin-compile-time"
 import topLevelAwait from "vite-plugin-top-level-await";
 
 export default defineConfig({
-	plugins: [{...compileTime(), enforce: "pre"}, topLevelAwait(), sveltekit()],
+	plugins: [compileTime(), topLevelAwait({
+		// The export name of top-level await promise for each chunk module
+		promiseExportName: "__tla",
+		// The function to generate import names of top-level await promise in each chunk module
+		promiseImportName: i => `__tla_${i}`
+	}), sveltekit()],
 
 	/*test: {
 		include: ['src/!**!/!*.{test,spec}.{js,ts}']
 	},*/
 
-	esbuild: {
-		target: "esnext"
-	},
+	//esbuild: {
+		//target: "esnext"
+	//},
 
 	build: {
 		cssMinify: "lightningcss",
@@ -33,6 +38,12 @@ export default defineConfig({
 		}
 	},
 	worker: {
+		plugins: () => {return [compileTime(), topLevelAwait({
+			// The export name of top-level await promise for each chunk module
+			promiseExportName: "__tla",
+			// The function to generate import names of top-level await promise in each chunk module
+			promiseImportName: i => `__tla_${i}`
+		})]},
 		format: "es"
 	}
 });
