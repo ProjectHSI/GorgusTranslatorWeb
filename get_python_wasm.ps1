@@ -20,7 +20,7 @@ Set-Location cpython
 #Invoke-WebRequest https://patch-diff.githubusercontent.com/raw/python/cpython/pull/133064.patch -OutFile emscriptenFixBuildPatch.patch
 #git apply --index emscriptenFixBuildPatch.patch
 
-if ($tag -ne "3.14") {
+if ($tag -ne "3.15") {
     git checkout $tag
 }
 

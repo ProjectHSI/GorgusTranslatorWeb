@@ -41,7 +41,7 @@ jobs:
           cache: pnpm
 
       - name: Checkout Python
-        if: ${{ env.PYTHON_VERSION != '3.14' }}
+        if: ${{ env.PYTHON_VERSION != '3.15' }}
         uses: actions/checkout@v4
         with:
           repository: 'python/cpython'
@@ -49,7 +49,7 @@ jobs:
           ref: ${{ env.PYTHON_VERSION }}
 
       - name: Checkout Python (No Explict Ref)
-        if: ${{ env.PYTHON_VERSION == '3.14' }}
+        if: ${{ env.PYTHON_VERSION == '3.15' }}
         uses: actions/checkout@v4
         with:
           repository: 'python/cpython'
