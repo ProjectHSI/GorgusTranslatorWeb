@@ -199,6 +199,10 @@ for (const dirent of nltkDataDir) {
 
 console.log("All done!")
 
+console.log(_libraries);
+console.log(_scripts);
+console.log(_nltkData);
+
 export const libraries = _libraries;
 export const scripts: string[] = _scripts;
 export const nltkData: { directory: string, file: string }[] = _nltkData;
