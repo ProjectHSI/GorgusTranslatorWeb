@@ -8,12 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@types/core-js':
+        specifier: ^2.5.8
+        version: 2.5.8
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.3
       coi-serviceworker:
         specifier: ^0.1.7
         version: 0.1.7
+      core-js:
+        specifier: ^3.42.0
+        version: 3.42.0
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.8
@@ -745,6 +751,9 @@ packages:
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
 
+  '@types/core-js@2.5.8':
+    resolution: {integrity: sha512-VgnAj6tIAhJhZdJ8/IpxdatM8G4OD3VWGlp6xIxUGENZlpbob9Ty4VVdC1FIEp0aK6DBscDDjyzy5FB60TuNqg==}
+
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
 
@@ -802,6 +811,9 @@ packages:
   cookie@0.6.0:
     resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
     engines: {node: '>= 0.6'}
+
+  core-js@3.42.0:
+    resolution: {integrity: sha512-Sz4PP4ZA+Rq4II21qkNqOEDTDrCvcANId3xpIgB34NDkWc3UduWj2dqEtN9yZIq8Dk3HyPI33x9sqqU5C8sr0g==}
 
   core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
@@ -1710,6 +1722,8 @@ snapshots:
 
   '@types/cookie@0.6.0': {}
 
+  '@types/core-js@2.5.8': {}
+
   '@types/estree@1.0.7': {}
 
   '@types/node@22.15.3':
@@ -1761,6 +1775,8 @@ snapshots:
   convert-source-map@2.0.0: {}
 
   cookie@0.6.0: {}
+
+  core-js@3.42.0: {}
 
   core-util-is@1.0.3: {}
 

@@ -1,11 +1,12 @@
-print ("script run...")
+#print ("script run...")
 
 import sys
 import setup
 import re
+import base64
 from time import time
 
-print("import...")
+#print("import...")
 
 setup.setup_sys_path()
 
@@ -63,7 +64,15 @@ while True:
     if translate_re_match is not None:
         #print("translate branch")
         #if translate_re_match[1] == "G":
-        print("[GTW_O]: [TO]: [" + translate_re_match[1] + " [" + translate_re_match[2] + "F]] {" + translate_re_match[3] + "} {" + translater.translate(translate_re_match[3], "gorgus" if translate_re_match[1] == "G" else "english", translate_re_match[2] != "!", True) + "}")
+        print("[GTW_O]: [TO]: [" + translate_re_match[1] + " [" + translate_re_match[2] + "F]] {" + translate_re_match[3] + "} {" + base64.b64encode(
+            translater.translate(
+                base64.b64decode(
+                    translate_re_match[3]
+                ).decode("utf-8"),
+                "gorgus" if translate_re_match[1] == "G" else "english",
+                translate_re_match[2] != "!", True
+            ).encode("utf-8")
+        ).decode("utf-8") + "}")
         #print(translate_re_match[1], translate_re_match[2])
     else:
         print("[GTW_O]: [IW]: Invalid command! (didn't match any regex)")

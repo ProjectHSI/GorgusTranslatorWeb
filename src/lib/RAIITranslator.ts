@@ -2,6 +2,9 @@
 import {PythonWorker} from "$lib/PythonWorker.Types";
 import CommandType = PythonWorker.CommandType;
 
+import "core-js/actual/typed-array/from-base64";
+import "core-js/actual/typed-array/to-base64";
+
 //import Python from "$lib/python/wasm/python.mjs";
 
 interface TranslationRequest {
@@ -123,6 +126,9 @@ export class RAIITranslator {
         Atomics.notify(this.pythonWorkerStdInInt32, 0);
     }
 
+    private textEncoder = new TextEncoder();
+    private textDecoder = new TextDecoder();
+
     translate(stringToTranslate: string, target: string, formal: boolean = true): Promise<string> {
         //this.stdoutPromises[{ type: "G", text: stringToTranslate }] = new Promise();
 
@@ -132,6 +138,8 @@ export class RAIITranslator {
                 throw new Error("bruh");
             }
 
+            stringToTranslate = (this.textEncoder.encode(stringToTranslate)).toBase64({ alphabet: "base64" });
+
             this.stdoutCallbacks.push((data) => {
                 let translationOutput = this.translationOutputRegex.exec(data);
 
@@ -140,7 +148,7 @@ export class RAIITranslator {
 
                 if (translationOutput[1] == target && translationOutput[2] == (!formal ? "!" : "") && translationOutput[3] == stringToTranslate) {
                     console.log("yay folks");
-                    resolve(translationOutput[4]);
+                    resolve(this.textDecoder.decode(Uint8Array.fromBase64(translationOutput[4])));
                 }
             });
 

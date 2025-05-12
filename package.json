@@ -29,11 +29,14 @@
 		"onlyBuiltDependencies": [
 			"@parcel/watcher",
 			"@swc/core",
+			"core-js",
 			"esbuild"
 		]
 	},
 	"dependencies": {
+		"@types/core-js": "^2.5.8",
 		"@types/node": "^22.15.3",
-		"coi-serviceworker": "^0.1.7"
+		"coi-serviceworker": "^0.1.7",
+		"core-js": "^3.42.0"
 	}
 }
