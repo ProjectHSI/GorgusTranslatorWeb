@@ -7,7 +7,7 @@ import JSZip from "jszip"
 
 import {libraries, nltkData, scripts} from "$lib/fsSetup.compile";
 
-for (const library of libraries) {
+/*for (const library of libraries) {
     import(`./src/lib/python/lib/${library}.zip?url`)
 }
 
@@ -17,7 +17,16 @@ for (const nltkDatum of nltkData) {
 
 for (const script of scripts) {
     import(`./src/lib/python_scripts/${script}.py?raw`)
-}
+}*/
+
+/*console.log(
+    import.meta.env.BASE_URL,
+    import.meta.url,
+    new URL(`./python/lib/click.zip`   , import.meta.url).href,
+    new URL(`./python_scripts/setup.py`, import.meta.url).href,
+    new URL(`./python_scripts/translate_to_gorgus.py`, import.meta.url).href
+);*/
+//throw new Error();*/
 
 import {PythonWorker} from "$lib/PythonWorker.Types";
 //import {monitorEventLoopDelay} from "node:perf_hooks";
@@ -176,19 +185,20 @@ class _PythonWorker {
                 const downloadPromises: Promise<void>[] = []
 
                 for (const script of scripts) {
-                    console.log(script);
+                    //console.log(script);
 
                     downloadPromises.push((async () => {
-                        const scriptText = await import(`./python_scripts/${script}.py?raw`);
-                        Module.FS.writeFile(`/home/web_user/gorgus/${script}.py`, scriptText.default, { canOwn: true });
+                        const scriptUrl = new URL(`./python_scripts/${script}.py`, import.meta.url).href;
+                        const scriptText = await (await fetch(scriptUrl)).text();
+                        Module.FS.writeFile(`/home/web_user/gorgus/${script}.py`, scriptText, { canOwn: true });
                     })());
                     //await Promise.all(downloadPromises);
                 }
                 for (const library of libraries) {
                     downloadPromises.push((async () => {
                         console.log(`Downloading library "${library}"...`)
-                        const libraryUrl = await import(`./python/lib/${library}.zip?url`);
-                        const libraryResponse = await fetchFunction(libraryUrl.default);
+                        const libraryUrl = new URL(`./python/lib/${library}.zip`, import.meta.url).href;
+                        const libraryResponse = await fetchFunction(libraryUrl);
 
                         const libraryResponseBuffer = await libraryResponse.arrayBuffer();
 
@@ -229,8 +239,8 @@ class _PythonWorker {
                         const combinedDataFile = nltkDataFile.directory + "." + nltkDataFile.file;
                         //const preProcessUrl = `./nltk/${nltkDataFile.directory}/${nltkDataFile.file}.zip?url`;
 
-                        const libraryUrl = await import(`./nltk/${combinedDataFile}.zip?url`);
-                        const libraryResponse = await fetchFunction(libraryUrl.default);
+                        const libraryUrl = new URL(`./nltk/${combinedDataFile}.zip`, import.meta.url).href;
+                        const libraryResponse = await fetchFunction(libraryUrl);
                         const libraryResponseBuffer = await libraryResponse.arrayBuffer();
 
                         let jsZip = await JSZip.loadAsync(libraryResponseBuffer);

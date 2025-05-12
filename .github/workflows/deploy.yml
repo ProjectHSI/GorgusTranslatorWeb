@@ -162,10 +162,6 @@ jobs:
         run: |
           pnpm run build
 
-      - name: List Files
-        run: Get-ChildItem ./src/lib/ -Recurse
-        shell: pwsh
-
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
