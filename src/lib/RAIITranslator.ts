@@ -18,16 +18,31 @@ export class RAIITranslator {
     private stdoutCallbacks: ((data: string) => void)[] = [];
 
     //private _isTranslatorReady: boolean = false;
-    isTranslatorReady() {
+    private _translatorReady: boolean = false;
+
+    isVmActive() {
         return this.vmActive;
+    }
+
+    isTranslatorReady() {
+        return this._translatorReady;
     }
 
     constructor(fetchFunction: (arg0: string) => Promise<Response>, _runtimeReadyCallback?: (() => void)) {
         //console.log("testo")
 
+        /*this.pythonWorker = import.meta.env.DEV ? new Worker(new URL('./PythonWorker', import.meta.url), {
+            type: 'module'
+        }) : new Worker(new URL('./PythonWorker', import.meta.url), {
+            type: 'classic'
+        });*/
+
         this.pythonWorker = new Worker(new URL('./PythonWorker', import.meta.url), {
-            type: import.meta.env.DEV ? 'module' : 'classic'
+            type: 'module'
         });
+
+        console.log('created the thing');
+        console.log(this.pythonWorker);
 
         this.pythonWorker.onmessage = (e: MessageEvent<PythonWorker.Command>) => {
             switch (e.data.command_type) {
@@ -42,10 +57,14 @@ export class RAIITranslator {
                     } as PythonWorker.RunCommand);
 
                     this.vmActive = true;
+                    this._translatorReady = false;
                     break;
 
                 case PythonWorker.CommandType.VM_Stdout:
                     //this.stdoutPromises[{ type: "G", text: "abd" }].
+                    if (e.data.stream_text == "[GTW_O]: runtime_ready") {
+                        this._translatorReady = true;
+                    }
                     for (const stdoutCallback of this.stdoutCallbacks) {
                         stdoutCallback(e.data.stream_text);
                     }
@@ -53,9 +72,13 @@ export class RAIITranslator {
             }
         }
 
+        console.log("reg")
+
         this.pythonWorker.postMessage({
             command_type: CommandType.Startup_VM
         } as PythonWorker.StartupCommand);
+
+        console.log("send");
 
         //this.raiiPython = new RAIIPythonWorker(fetchFunction, () => {
             //this.raiiPython.runModule(["/home/web_user/gorgus/translate_to_gorgus.py"]);
@@ -63,6 +86,19 @@ export class RAIITranslator {
             //if (_runtimeReadyCallback) {
                 //_runtimeReadyCallback()
             //}});
+    }
+
+    async waitUntilTranslatorReady(): Promise<void> {
+        if (this._translatorReady) {
+            return;
+        } else {
+            return new Promise((resolve, reject) => {
+                this.stdoutCallbacks.push((stdoutString: string) => {
+                    if (stdoutString == "[GTW_O]: runtime_ready")
+                        resolve();
+                })
+            });
+        }
     }
 
     private translationOutputRegex = new RegExp("\\[GTW_O]: \\[TO]: \\[([EG])] \\{(.*)} \\{(.*)}");

@@ -9,6 +9,8 @@ import {libraries, nltkData, scripts} from "$lib/fsSetup.compile"
 import {PythonWorker} from "$lib/PythonWorker.Types";
 //import {monitorEventLoopDelay} from "node:perf_hooks";
 
+console.log("we runnin'")
+
 //console.log(libraries);
 
 class _PythonWorker {
@@ -300,6 +302,8 @@ onmessage = async (e: MessageEvent<PythonWorker.Command>) => {
                 } as PythonWorker.ReadyEvent)
             });
 
+            console.log("signal")
+
             break;
         case PythonWorker.CommandType.Run_VM:
             if (currentPythonWorker == undefined)
@@ -325,3 +329,5 @@ onmessage = async (e: MessageEvent<PythonWorker.Command>) => {
             break;
     }
 }
+
+console.log('moduleReady')
