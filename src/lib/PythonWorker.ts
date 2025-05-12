@@ -14,27 +14,27 @@ console.log("we runnin'")
 //console.log(libraries);
 
 class _PythonWorker {
-    get pythonVersionMinor(): number {
+    /*get pythonVersionMinor(): number {
         return this._pythonVersionMinor;
     }
     get pythonVersionMajor(): number {
         return this._pythonVersionMajor;
     }
     private _pythonVersionMajor: number = 3;
-    private _pythonVersionMinor: number = 14;
+    private _pythonVersionMinor: number = 14;*/
 
     private emscriptenRuntimeReady = true;
 
     private runtimeReadyCallback: (() => void) | undefined = undefined;
     //private emscriptenProperties = };
 
-    private preRunReady = false;
+    //private preRunReady = false;
     //private emscriptenRuntimeReady = false;
 
     currentStdin: SharedArrayBuffer = new SharedArrayBuffer(4096);
     private currentStdinInt32: Int32Array = new Int32Array<ArrayBufferLike>(this.currentStdin);
     private readIndex = 0;
-    private returnedNull: number = true;
+    private returnedNull: number = 0;
 
     //stdin(): number | null {
 
