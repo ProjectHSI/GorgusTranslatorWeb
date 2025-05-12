@@ -173,6 +173,7 @@ class _PythonWorker {
                 }
                 for (const library of libraries) {
                     downloadPromises.push((async () => {
+                        console.log(`Downloading library "${library}"...`)
                         const libraryUrl = await import(`./python/lib/${library}.zip?url`);
                         const libraryResponse = await fetchFunction(libraryUrl.default);
 
