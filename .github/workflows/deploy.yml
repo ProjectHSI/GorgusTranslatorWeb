@@ -163,7 +163,7 @@ jobs:
           pnpm run build
 
       - name: List Files
-        run: Get-ChildItem -Recurse
+        run: Get-ChildItem ./src/lib/ -Recurse
         shell: pwsh
 
       - name: Upload Artifacts
