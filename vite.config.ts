@@ -1,15 +1,18 @@
 import { defineConfig } from "vite";
 import { sveltekit } from '@sveltejs/kit/vite';
 import compileTime from "vite-plugin-compile-time"
+import topLevelAwait from "vite-plugin-top-level-await";
 
 export default defineConfig({
-	plugins: [sveltekit(), compileTime()],
+	plugins: [topLevelAwait(), sveltekit(), compileTime()],
 
 	/*test: {
 		include: ['src/!**!/!*.{test,spec}.{js,ts}']
 	},*/
 
-
+	esbuild: {
+		target: "esnext"
+	},
 
 	build: {
 		cssMinify: "lightningcss",
@@ -28,5 +31,8 @@ export default defineConfig({
 			ignored: ["**/python/**"], // infinite hmr updates otherwise
 
 		}
+	},
+	worker: {
+		format: "es"
 	}
 });
