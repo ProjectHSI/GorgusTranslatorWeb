@@ -38,7 +38,9 @@ while True:
     except EOFError:
         #print("received eof!")
         continue # try again
-    print(line)
+    except:
+        continue
+    #print(line)
 
     #print("sanity")
 
@@ -61,7 +63,7 @@ while True:
     if translate_re_match is not None:
         #print("translate branch")
         #if translate_re_match[1] == "G":
-        print("[GTW_O]: [TO]: [" + translate_re_match[1] + " [" + translate_re_match[2] + "F]] {" + translate_re_match[3] + "} {" + translater.translate(translate_re_match[3], "gorgus" if translate_re_match[1] == "G" else "english", translate_re_match[2] != "!", False) + "}")
+        print("[GTW_O]: [TO]: [" + translate_re_match[1] + " [" + translate_re_match[2] + "F]] {" + translate_re_match[3] + "} {" + translater.translate(translate_re_match[3], "gorgus" if translate_re_match[1] == "G" else "english", translate_re_match[2] != "!", True) + "}")
         #print(translate_re_match[1], translate_re_match[2])
     else:
         print("[GTW_O]: [IW]: Invalid command! (didn't match any regex)")
