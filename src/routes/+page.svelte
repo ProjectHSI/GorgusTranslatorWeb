@@ -126,7 +126,7 @@
 	<div class="translationOptions">
 		<div>
 			<input type="checkbox" id="toGFormal" bind:checked={shouldTranslationBeFormal}>
-			<label for="toGFormal">Formal</label>
+			<label for="toGFormal" class="translationOption">Formal</label>
 		</div>
 	</div>
 {/if}
@@ -166,6 +166,10 @@
 	  align-items: center;
 	  justify-content: center;
 	  flex-direction: row;
+	}
+
+	.translationOption {
+	  font-family: system-ui;
 	}
 </style>
 <!--<button onclick={() => {console.log("sanity")}}>test</button>-->

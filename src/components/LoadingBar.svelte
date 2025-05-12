@@ -46,6 +46,7 @@
 	  font-size: 1em;
 	  padding-top: 0.1%;
 	  padding-bottom: 0.1%;
+	  font-family: system-ui;
 	}
 
 	.loadingBarShine {
