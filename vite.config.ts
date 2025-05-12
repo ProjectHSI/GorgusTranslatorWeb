@@ -19,7 +19,7 @@ export default defineConfig({
 		/*watch: {
 			include: ["**!/python_*!/!**"]
 		}*/
-		sourcemap: true
+		sourcemap: "inline"
 	},
 	server: {
 		headers: {
