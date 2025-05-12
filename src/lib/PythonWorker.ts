@@ -5,7 +5,12 @@ import pyStdLibZip from '$lib/python/wasm/python3.14.zip?url'
 
 import JSZip from "jszip"
 
-import {libraries, nltkData, scripts} from "$lib/fsSetup.compile"
+import {libraries, nltkData, scripts} from "$lib/fsSetup.compile";
+
+console.log(libraries);
+console.log(nltkData);
+console.log(scripts);
+
 import {PythonWorker} from "$lib/PythonWorker.Types";
 //import {monitorEventLoopDelay} from "node:perf_hooks";
 
