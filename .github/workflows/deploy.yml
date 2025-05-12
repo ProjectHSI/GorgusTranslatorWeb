@@ -156,6 +156,10 @@ jobs:
         run: Copy-Item node_modules/coi-serviceworker/coi-serviceworker.js static/
         shell: pwsh
 
+      - name: Package Prior Dependencies
+        run: node ./src/lib/fsSetup.compile.ts
+        shell: pwsh
+
       - name: Build
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
