@@ -20,10 +20,6 @@ jobs:
       - name: Update APT
         run: sudo apt-get update
 
-      - name: Install CCache
-        if: env.USE_CCACHE == 'true'
-        run: sudo apt-get install ccache -y
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -58,11 +54,6 @@ jobs:
       #- name: Print PATH
       #  run: |
       #    echo $PATH
-
-      - name: Use CCache
-        if: env.USE_CCACHE == 'true'
-        run: |
-          echo "EM_COMPILER_WRAPPER=ccache" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: pnpm install
@@ -129,6 +120,15 @@ jobs:
           sed -i "s/SET //g" ./emsdk/emsdk_set_env.bat
           mv ./emsdk/emsdk_set_env.bat ./emsdk/emsdk_set_env
           cat ./emsdk/emsdk_set_env >> $GITHUB_ENV
+
+      - name: Install CCache
+        if: env.USE_CCACHE == 'true' && steps.cache-cpython.outputs.cache-hit != 'true'
+        run: sudo apt-get install ccache -y
+
+      - name: Use CCache
+        if: env.USE_CCACHE == 'true' && steps.cache-cpython.outputs.cache-hit != 'true'
+        run: |
+          echo "EM_COMPILER_WRAPPER=ccache" >> $GITHUB_ENV
 
       - name: Build Emscripten CPython
         if: steps.cache-cpython.outputs.cache-hit != 'true'
