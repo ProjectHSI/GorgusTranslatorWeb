@@ -19,13 +19,13 @@ for (const script of scripts) {
     import(`./src/lib/python_scripts/${script}.py?raw`)
 }*/
 
-/*console.log(
+console.log(
     import.meta.env.BASE_URL,
     import.meta.url,
     new URL(`./python/lib/click.zip`   , import.meta.url).href,
     new URL(`./python_scripts/setup.py`, import.meta.url).href,
     new URL(`./python_scripts/translate_to_gorgus.py`, import.meta.url).href
-);*/
+);
 //throw new Error();*/
 
 import {PythonWorker} from "$lib/PythonWorker.Types";
