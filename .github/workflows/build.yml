@@ -210,5 +210,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          path: '.'
+          path: './build'
           name: ${{ env.ARTIFACT_ID }}
