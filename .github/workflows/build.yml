@@ -32,7 +32,7 @@ env:
   USE_CCACHE: 'true'
   CCACHE_DIR: "ccache-dir"
   PYTHON_VERSION: '3.14'
-  ARTIFACT_ID: '${{ github.run_number }}-build'
+  ARTIFACT_ID: '${{ github.action }}-${{ github.run_number }}-build'
 
 jobs:
   build_site:
