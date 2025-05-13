@@ -5,6 +5,22 @@ on:
     branches:
       - "main"
   workflow_dispatch:
+    inputs:
+      updateGorgusTranslator:
+        description: "Update Gorgus Translator"
+        required: true
+        default: false
+        type: boolean
+      gorgusTranslatorRepo:
+        description: "Gorgus Translator Repository"
+        required: true
+        default: "https://github.com/SpookyDervish/Gorgus-Translator.git"
+        type: string
+      gorgusTranslatorBranch:
+        description: "Gorgus Translator Branch"
+        required: true
+        default: "main"
+        type: string
 
 env:
   EM_VERSION: 4.0.5
@@ -142,6 +158,15 @@ jobs:
           Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/web_example/python${{ env.PYTHON_VERSION }}.zip"  ./src/lib/python/wasm
           Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/python.wasm"                                      ./src/lib/python/wasm
           Copy-Item "./cpython/cross-build/wasm32-emscripten/build/python/python.mjs"                                       ./src/lib/python/wasm
+        shell: pwsh
+
+      - name: Update Gorgus Translator
+        if: ${{ inputs.updateGorgusTranslator }}
+        run: |
+          cd Gorgus-Translator
+          git remote add updated ${{ inputs.gorgusTranslatorRepo }}
+          git fetch --all
+          git checkout updated/${{ inputs.gorgusTranslatorBranch }}
         shell: pwsh
 
       - name: Download PIP Dependencies
