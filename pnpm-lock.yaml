@@ -23,10 +23,10 @@ importers:
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.8
-        version: 3.0.8(@sveltejs/kit@2.20.7(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))
+        version: 3.0.8(@sveltejs/kit@2.21.0(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))
       '@sveltejs/kit':
-        specifier: ^2.16.0
-        version: 2.20.7(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0))
+        specifier: ^2.21.0
+        version: 2.21.0(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.0
         version: 5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0))
@@ -649,8 +649,8 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
 
-  '@sveltejs/kit@2.20.7':
-    resolution: {integrity: sha512-dVbLMubpJJSLI4OYB+yWYNHGAhgc2bVevWuBjDj8jFUXIJOAnLwYP3vsmtcgoxNGUXoq0rHS5f7MFCsryb6nzg==}
+  '@sveltejs/kit@2.21.0':
+    resolution: {integrity: sha512-kvu4h9qXduiPk1Q1oqFKDLFGu/7mslEYbVaqpbBcBxjlRJnvNCFwEvEwKt0Mx9TtSi8J77xRelvJobrGlst4nQ==}
     engines: {node: '>=18.13'}
     hasBin: true
     peerDependencies:
@@ -896,9 +896,6 @@ packages:
 
   immutable@5.1.2:
     resolution: {integrity: sha512-qHKXW1q6liAk1Oys6umoaZbDRqjcjgSrbnrifHsfsttza7zcvRAsL7mMV6xWcyhwQy7Xj5v4hhbr6b+iDYwlmQ==}
-
-  import-meta-resolve@4.1.0:
-    resolution: {integrity: sha512-I6fiaX09Xivtk+THaMfAwnA3MVA5Big1WHF1Dfx9hFuvNIWpXnorlkzhcQf6ehrqQiiZECRt1poOAkPmer3ruw==}
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
@@ -1625,18 +1622,19 @@ snapshots:
     dependencies:
       acorn: 8.14.1
 
-  '@sveltejs/adapter-static@3.0.8(@sveltejs/kit@2.20.7(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))':
+  '@sveltejs/adapter-static@3.0.8(@sveltejs/kit@2.21.0(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))':
     dependencies:
-      '@sveltejs/kit': 2.20.7(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0))
+      '@sveltejs/kit': 2.21.0(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0))
 
-  '@sveltejs/kit@2.20.7(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0))':
+  '@sveltejs/kit@2.21.0(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0)))(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0))':
     dependencies:
+      '@sveltejs/acorn-typescript': 1.0.5(acorn@8.14.1)
       '@sveltejs/vite-plugin-svelte': 5.0.3(svelte@5.28.6)(vite@6.3.4(@types/node@22.15.17)(lightningcss@1.30.0)(sass@1.88.0))
       '@types/cookie': 0.6.0
+      acorn: 8.14.1
       cookie: 0.6.0
       devalue: 5.1.1
       esm-env: 1.2.2
-      import-meta-resolve: 4.1.0
       kleur: 4.1.5
       magic-string: 0.30.17
       mrmime: 2.0.1
@@ -1878,8 +1876,6 @@ snapshots:
   immediate@3.0.6: {}
 
   immutable@5.1.2: {}
-
-  import-meta-resolve@4.1.0: {}
 
   inherits@2.0.4: {}
 
