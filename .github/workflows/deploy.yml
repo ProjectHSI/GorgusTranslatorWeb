@@ -25,9 +25,9 @@ jobs:
   build_gorgustranslatorweb:
     uses: ./.github/workflows/build.yml
     with:
-      updateGorgusTranslator: ${{ inputs.updateGorgusTranslator }}
-      gorgusTranslatorRepo: ${{ inputs.gorgusTranslatorRepo }}
-      gorgusTranslatorBranch: ${{ inputs.gorgusTranslatorBranch }}
+      updateGorgusTranslator: ${{ github.event_name == 'workflow_dispatch' && inputs.updateGorgusTranslator || false }}
+      gorgusTranslatorRepo: ${{ github.event_name == 'workflow_dispatch' && inputs.gorgusTranslatorRepo || 'https://github.com/SpookyDervish/Gorgus-Translator.git' }}
+      gorgusTranslatorBranch: ${{ github.event_name == 'workflow_dispatch' && inputs.gorgusTranslatorBranch || 'main' }}
 
   deploy:
     needs: build_gorgustranslatorweb
