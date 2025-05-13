@@ -23,6 +23,7 @@ jobs:
 
     steps:
       - name: Download Build Artifact
+        id: download-build-artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build_gorgustranslatorweb.outputs.ARTIFACT }}
@@ -30,7 +31,7 @@ jobs:
       - name: Upload Page Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'build/'
+          path: '${{ steps.download-build-artifact.outputs.download-path }}/build/'
 
       - name: Deploy
         id: deployment
