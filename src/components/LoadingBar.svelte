@@ -1,10 +1,13 @@
 <script lang="ts">
 	import {onMount} from "svelte";
+    import type {LoadingTip, LoadingTipInterface} from "$lib/loadingTips";
 
-    let { loadingTips }: { loadingTips: string[] } = $props();
+    let { loadingTips }: { loadingTips: LoadingTip[] } = $props();
 
     function changeLoadingTip() {
-        currentLoadingTip = loadingTips[Math.floor(Math.random() * loadingTips.length)];
+        let newLoadingTip: LoadingTip = loadingTips[Math.floor(Math.random() * loadingTips.length)];
+
+        currentLoadingTip = typeof(newLoadingTip) == "string" ? { quote: newLoadingTip} : newLoadingTip;
 		setTimeout(changeLoadingTip, 8000);
     }
 
@@ -12,14 +15,22 @@
         changeLoadingTip();
     })
 
-    let currentLoadingTip = $state("...");
+    let currentLoadingTip: LoadingTipInterface = $state({ quote: "..." });
 </script>
 
 
 <div class="loadingBar">
-	<span class="loadingBarText">
-		{currentLoadingTip}
-	</span>
+	<div class="loadingBarTextBox">
+		<span class="loadingBarText">
+			{currentLoadingTip.quote}
+		</span>
+		<br />
+		{#if currentLoadingTip.author}
+			<span class="loadingBarText loadingBarQuoteAuthor">
+				<i>~ {currentLoadingTip.author}</i>
+			</span>
+		{/if}
+	</div>
 	<div class="loadingBarShine">
 
 	</div>
@@ -39,14 +50,26 @@
 	}
 
 	.loadingBarText {
-	  width: 100%;
+	  //width: 100%;
 	  text-align: center;
 	  color: white;
-	  z-index: 2;
 	  font-size: 1em;
-	  padding-top: 0.1%;
-	  padding-bottom: 0.1%;
 	  font-family: system-ui;
+	}
+
+	.loadingBarQuoteAuthor {
+	  position: relative;
+	  flex-grow: 1;
+	  right: -50%;
+	  //right: 0;
+	}
+
+	.loadingBarTextBox {
+	  display: flex;
+	  flex-direction: column;
+	  z-index: 2;
+      padding-top: 0.1%;
+      padding-bottom: 0.1%;
 	}
 
 	.loadingBarShine {
