@@ -4,10 +4,30 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      updateGorgusTranslator:
+        description: "Update Gorgus Translator"
+        required: true
+        default: false
+        type: boolean
+      gorgusTranslatorRepo:
+        description: "Gorgus Translator Repository"
+        required: true
+        default: "https://github.com/SpookyDervish/Gorgus-Translator.git"
+        type: string
+      gorgusTranslatorBranch:
+        description: "Gorgus Translator Branch"
+        required: true
+        default: "main"
+        type: string
 
 jobs:
   build_gorgustranslatorweb:
     uses: ./.github/workflows/build.yml
+    with:
+      updateGorgusTranslator: ${{ inputs.updateGorgusTranslator }}
+      gorgusTranslatorRepo: ${{ inputs.gorgusTranslatorRepo }}
+      gorgusTranslatorBranch: ${{ inputs.gorgusTranslatorBranch }}
 
   deploy:
     needs: build_gorgustranslatorweb

@@ -20,6 +20,8 @@ on:
 jobs:
   build_gorgustranslatorweb:
     uses: ./.github/workflows/build.yml
+    with:
+      build: false
 
   analyze:
     name: Analyze (${{ matrix.language }})

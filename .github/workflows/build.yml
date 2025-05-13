@@ -6,8 +6,10 @@ on:
     outputs:
       ARTIFACT:
         value: ${{ jobs.build_site.outputs.ARTIFACT }}
-  workflow_dispatch:
     inputs:
+      build:
+        default: true
+        type: boolean
       updateGorgusTranslator:
         description: "Update Gorgus Translator"
         required: true
@@ -191,6 +193,7 @@ jobs:
         shell: pwsh
 
       - name: Build
+        if: inputs.build
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
         run: |
