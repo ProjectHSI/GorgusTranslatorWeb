@@ -1,6 +1,8 @@
-name: deploy.yml
+name: Deploy to Github Pages
 on:
   push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -9,7 +11,6 @@ jobs:
 
   deploy:
     needs: build_gorgustranslatorweb
-    if: ${{ github.event_name != 'workflow-call' && github.ref == 'main' }}
     runs-on: ubuntu-latest
 
     permissions:
