@@ -30,12 +30,13 @@ env:
   USE_CCACHE: 'true'
   CCACHE_DIR: "ccache-dir"
   PYTHON_VERSION: '3.14'
+  ARTIFACT_ID: '${{ github.run_number }}-build'
 
 jobs:
   build_site:
     runs-on: ubuntu-latest
     outputs:
-      ARTIFACT: ${{ github.event_name == 'workflow_call' && steps.determine_artifact.outputs.ARTIFACT || '' }}
+      ARTIFACT: ${{ env.ARTIFACT_ID }}
     steps:
       - name: Update APT
         run: sudo apt-get update
@@ -195,16 +196,14 @@ jobs:
         run: |
           pnpm run build
 
-      - name: Determine Artifact Name
-        id: determine_artifact
-        shell: pwsh
-        run: |
-          $artifactName = "${{ github.run_number }}-build"
-          echo "ARTIFACT=$artifactName" >> $GITHUB_OUTPUT
-          echo "ARTIFACT=$artifactName" >> $GITHUB_ENV
+#      - name: Determine Artifact Name
+#        id: determine_artifact
+#        shell: pwsh
+#        run: |
+#          echo "ARTIFACT=$artifactName" >> $GITHUB_OUTPUT
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           path: './build'
-          name: ${{ env.ARTIFACT }}
+          name: ${{ env.ARTIFACT_ID }}
