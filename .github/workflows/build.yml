@@ -12,17 +12,17 @@ on:
         type: boolean
       updateGorgusTranslator:
         description: "Update Gorgus Translator"
-        required: true
+        required: false
         default: false
         type: boolean
       gorgusTranslatorRepo:
         description: "Gorgus Translator Repository"
-        required: true
+        required: false
         default: "https://github.com/SpookyDervish/Gorgus-Translator.git"
         type: string
       gorgusTranslatorBranch:
         description: "Gorgus Translator Branch"
-        required: true
+        required: false
         default: "main"
         type: string
 
