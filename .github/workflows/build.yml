@@ -41,6 +41,10 @@ jobs:
     permissions:
       contents: read
 
+    # other workflows might cache important stuff, saving significant time!
+    concurrency:
+      group: "BuildSiteConcurrency"
+
     runs-on: ubuntu-latest
     outputs:
       ARTIFACT: ${{ env.ARTIFACT_ID }}
