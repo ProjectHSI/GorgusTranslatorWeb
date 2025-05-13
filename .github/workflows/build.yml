@@ -201,4 +201,9 @@ jobs:
         run: |
           $artifactName = "${{ github.run_number }}-build"
           echo "ARTIFACT=$artifactName" >> $GITHUB_OUTPUT
-          echo "ARTIFACT=$artifactName" >> $GITHUB_ENV
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: './build'
+          name: ${{ steps.determine_artifact.outputs.ARTIFACT }}
