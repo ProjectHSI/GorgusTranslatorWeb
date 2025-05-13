@@ -38,6 +38,9 @@ env:
 
 jobs:
   build_site:
+    permissions:
+      contents: read
+
     runs-on: ubuntu-latest
     outputs:
       ARTIFACT: ${{ env.ARTIFACT_ID }}

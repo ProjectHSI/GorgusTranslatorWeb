@@ -24,6 +24,8 @@ on:
 jobs:
   build_gorgustranslatorweb:
     uses: ./.github/workflows/build.yml
+    permissions:
+      contents: read
     with:
       updateGorgusTranslator: ${{ github.event_name == 'workflow_dispatch' && inputs.updateGorgusTranslator || false }}
       gorgusTranslatorRepo: ${{ github.event_name == 'workflow_dispatch' && inputs.gorgusTranslatorRepo || 'https://github.com/SpookyDervish/Gorgus-Translator.git' }}
