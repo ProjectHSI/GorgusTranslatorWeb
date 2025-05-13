@@ -40,6 +40,8 @@ jobs:
       actions: read
       contents: read
 
+    needs: build_gorgustranslatorweb
+
     strategy:
       fail-fast: false
       matrix:
@@ -88,7 +90,7 @@ jobs:
     - if: matrix.language == 'javascript-typescript' && matrix.build-mode == 'manual'
       uses: actions/download-artifact@v4
       with:
-        name: ${{ jobs.build_gorgustranslatorweb.outputs.ARTIFACT }}
+        name: ${{ needs.build_gorgustranslatorweb.outputs.ARTIFACT }}
       #shell: pwsh
       #run: |
 
