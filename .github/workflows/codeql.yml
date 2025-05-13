@@ -49,7 +49,7 @@ jobs:
         - language: actions
           build-mode: none
         - language: javascript-typescript
-          build-mode: manual
+          build-mode: none
         # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
         # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
@@ -87,7 +87,7 @@ jobs:
     # to build your code.
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-    - if: matrix.language == 'javascript-typescript' && matrix.build-mode == 'manual'
+    - if: matrix.language == 'javascript-typescript'
       uses: actions/download-artifact@v4
       with:
         name: ${{ needs.build_gorgustranslatorweb.outputs.ARTIFACT }}
