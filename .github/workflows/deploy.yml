@@ -2,8 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - "main"
+  workflow_call:
   workflow_dispatch:
     inputs:
       updateGorgusTranslator:
@@ -198,6 +197,7 @@ jobs:
 
   deploy:
     needs: build_site
+    if: ${{ github.event_name == 'push' && github.ref == 'main' }}
     runs-on: ubuntu-latest
 
     permissions:
