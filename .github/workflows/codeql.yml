@@ -85,7 +85,7 @@ jobs:
     - if: matrix.language == 'javascript-typescript' && matrix.build-mode == 'manual'
       name: Build GorgusTranslatorWeb
       id: js-build-job
-      uses: ${{ github.action_repository }}/.github/workflows/build.yml@${{ github.action_ref }}
+      uses: ProjectHSI/GorgusTranslator/.github/workflows/build.yml@main
 
     - if: matrix.language == 'javascript-typescript' && matrix.build-mode == 'manual'
       uses: actions/download-artifact@v4
