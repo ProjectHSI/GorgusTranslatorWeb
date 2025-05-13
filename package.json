@@ -16,7 +16,7 @@
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"jszip": "^3.10.1",
-		"lightningcss": "^1.29.3",
+		"lightningcss": "^1.30.0",
 		"sass": "^1.88.0",
 		"svelte": "^5.28.6",
 		"svelte-check": "^4.0.0",
