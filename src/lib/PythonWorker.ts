@@ -192,7 +192,7 @@ class _PythonWorker {
                         const scriptText = await (await fetch(scriptUrl)).text();
                         Module.FS.writeFile(`/home/web_user/gorgus/${script}.py`, scriptText, { canOwn: true });
                     })());
-                    await Promise.all(downloadPromises);
+                    //await Promise.all(downloadPromises);
                 }
                 for (const library of libraries) {
                     downloadPromises.push((async () => {
@@ -229,7 +229,7 @@ class _PythonWorker {
 
                         }
                     })());
-                    await Promise.all(downloadPromises);
+                    //await Promise.all(downloadPromises);
                 }
                 for (const nltkDataFile of nltkData) {
                     downloadPromises.push((async () => {
@@ -262,7 +262,7 @@ class _PythonWorker {
                         Module.FS.mkdirTree(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}`)
                         Module.FS.writeFile(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
                     })());
-                    await Promise.all(downloadPromises);
+                    //await Promise.all(downloadPromises);
                 }
 
                 await Promise.all(downloadPromises);
