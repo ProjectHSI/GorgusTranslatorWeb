@@ -13,7 +13,7 @@ name: "CodeQL Advanced"
 
 on:
   push:
-  pull_request:
+  #pull_request:
   schedule:
     - cron: '0 0 * * *'
 
