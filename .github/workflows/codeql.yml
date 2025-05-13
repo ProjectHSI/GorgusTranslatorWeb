@@ -18,10 +18,10 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
-  build_gorgustranslatorweb:
-    uses: ./.github/workflows/build.yml
-    with:
-      build: false
+  #build_gorgustranslatorweb:
+    #uses: ./.github/workflows/build.yml
+    #with:
+      #build: false
 
   analyze:
     name: Analyze (${{ matrix.language }})
@@ -42,7 +42,7 @@ jobs:
       actions: read
       contents: read
 
-    needs: build_gorgustranslatorweb
+    #needs: build_gorgustranslatorweb
 
     strategy:
       fail-fast: false
@@ -89,10 +89,10 @@ jobs:
     # to build your code.
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-    - if: matrix.language == 'javascript-typescript'
-      uses: actions/download-artifact@v4
-      with:
-        name: ${{ needs.build_gorgustranslatorweb.outputs.ARTIFACT }}
+    #- if: matrix.language == 'javascript-typescript'
+      #uses: actions/download-artifact@v4
+      #with:
+        #name: ${{ needs.build_gorgustranslatorweb.outputs.ARTIFACT }}
       #shell: pwsh
       #run: |
 
