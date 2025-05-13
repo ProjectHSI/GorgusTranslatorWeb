@@ -21,6 +21,10 @@ on:
         default: "main"
         type: string
 
+# other workflows might cache important stuff, saving significant time!
+concurrency:
+  group: "DeploySiteConcurrency"
+
 jobs:
   build_gorgustranslatorweb:
     uses: ./.github/workflows/build.yml
