@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
   workflow_call:
+    outputs:
+      ARTIFACT:
+        value: ${{ jobs.build_site.outputs.ARTIFACT }}
   workflow_dispatch:
     inputs:
       updateGorgusTranslator:
