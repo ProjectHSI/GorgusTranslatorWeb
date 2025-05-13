@@ -18,6 +18,9 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
+  build_gorgustranslatorweb:
+    uses: ProjectHSI/GorgusTranslator/.github/workflows/build.yml@main
+
   analyze:
     name: Analyze (${{ matrix.language }})
     # Runner size impacts CodeQL analysis time. To learn more, please see:
@@ -83,14 +86,9 @@ jobs:
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
     - if: matrix.language == 'javascript-typescript' && matrix.build-mode == 'manual'
-      name: Build GorgusTranslatorWeb
-      id: js-build-job
-      uses: ProjectHSI/GorgusTranslator/.github/workflows/build.yml@main
-
-    - if: matrix.language == 'javascript-typescript' && matrix.build-mode == 'manual'
       uses: actions/download-artifact@v4
       with:
-        name: ${{ steps.js-build-job.outputs.ARTIFACT }}
+        name: ${{ jobs.build_gorgustranslatorweb.outputs.ARTIFACT }}
       #shell: pwsh
       #run: |
 
