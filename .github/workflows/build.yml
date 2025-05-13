@@ -195,42 +195,10 @@ jobs:
         run: |
           pnpm run build
 
-      - name: Upload Page Artifacts
-        if: ${{ github.event_name != 'workflow-call' }}
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'build/'
-
       - name: Determine Artifact Name
         id: determine_artifact
-        if: ${{ github.event_name == 'workflow-call' }}
         shell: pwsh
         run: |
           $artifactName = "${{ github.run_number }}-build"
           echo "ARTIFACT=$artifactName" >> $GITHUB_OUTPUT
           echo "ARTIFACT=$artifactName" >> $GITHUB_ENV
-
-      - name: Upload Artifacts
-        if: ${{ github.event_name == 'workflow-call' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT }}
-          path: "/"
-
-  deploy:
-    needs: build_site
-    if: ${{ github.event_name != 'workflow-call' && github.ref == 'main' }}
-    runs-on: ubuntu-latest
-
-    permissions:
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
