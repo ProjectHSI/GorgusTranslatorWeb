@@ -13,7 +13,7 @@
 	<div class="siteHeader">
 		<!--<a class="siteLink" href="/">Translator</a>-->
 		{#each pages as _page}
-			<a class="siteLinkDiv" href={_page.href} aria-current={page.url.pathname === _page.href ? 'page' : undefined}>
+			<a class="siteLinkDiv" href={import.meta.env.BASE_URL + _page.href} aria-current={page.url.pathname === import.meta.env.BASE_URL + _page.href ? 'page' : undefined}>
 				<span class="siteLink">{_page.label}</span>
 			</a>
 		{/each}
