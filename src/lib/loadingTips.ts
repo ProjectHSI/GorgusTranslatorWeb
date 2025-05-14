@@ -19,7 +19,7 @@ export default [
     { quote: "my god! Gorgan freeman!", author: "SpookyDervish" },
     { quote: "dagunga", author: "SpookyDervish" },
     { quote: "gorila 🦍", author: "SpookyDervish" },
-    { quote: "i have [the-trumpter] on disord [...] he was begging to make the [mobile] app bro 😭🙏", author: "SpookyDervish" },
+    { quote: "i have [the-trumpter] on disord [...] he was begging to make the [mobile] app bro 😭🙏 [HEY!! -tt]", author: "SpookyDervish" },
 
     { quote: "This web translator started as unofficial, but got promoted into an official one.", author: "[Project HSI]" },
     { quote: "All translations are done in the browser - they are never sent to an outside server.", author: "[Project HSI]" },
