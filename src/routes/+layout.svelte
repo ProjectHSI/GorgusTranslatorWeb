@@ -8,7 +8,7 @@
         { label: "About", href: "about/" }
     ]
 
-    console.log(import.meta.env.BASE_URL);
+    console.log("Base Path", import.meta.env.BASE_URL);
 </script>
 
 <div class="site">
