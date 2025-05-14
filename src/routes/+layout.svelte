@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
+    import { base } from '$app/paths';
 
 	let { children } = $props();
 
@@ -20,10 +21,10 @@
 <div class="site">
 	<div class="siteHeader">
 		<!--<a class="siteLink" href="/">Translator</a>-->
-		<a class="siteLinkDiv" href="/" aria-current={page.url.pathname === "/"}>
+		<a class="siteLinkDiv" href="{base}/" aria-current={page.url.pathname === "/"}>
 			<span class="siteLink">Translator</span>
 		</a>
-		<a class="siteLinkDiv" href="/about" aria-current={page.url.pathname === "/about/"}>
+		<a class="siteLinkDiv" href="{base}/about" aria-current={page.url.pathname === "/about/"}>
 			<span class="siteLink">About</span>
 		</a>
 		<!--<a class="siteLink" href="/about/">About</a>-->
