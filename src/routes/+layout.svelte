@@ -9,6 +9,12 @@
     ]
 
     console.log("Base Path", import.meta.env.BASE_URL);
+
+    /*if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(
+            import.meta.env.MODE === 'production' ? '/SW.js' : '/SW.js?dev-sw'
+        )
+    }*/
 </script>
 
 <div class="site">
@@ -17,7 +23,7 @@
 		<a class="siteLinkDiv" href="/" aria-current={page.url.pathname === "/"}>
 			<span class="siteLink">Translator</span>
 		</a>
-		<a class="siteLinkDiv" href="/about/" aria-current={page.url.pathname === "/about/"}>
+		<a class="siteLinkDiv" href="about/" aria-current={page.url.pathname === "/about/"}>
 			<span class="siteLink">About</span>
 		</a>
 		<!--<a class="siteLink" href="/about/">About</a>-->
