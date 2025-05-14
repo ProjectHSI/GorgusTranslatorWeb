@@ -14,11 +14,12 @@
 <div class="site">
 	<div class="siteHeader">
 		<!--<a class="siteLink" href="/">Translator</a>-->
-		{#each pages as _page}
-			<a class="siteLinkDiv" href={import.meta.env.BASE_URL + _page.href} aria-current={page.url.pathname === import.meta.env.BASE_URL + _page.href ? 'page' : undefined}>
-				<span class="siteLink">{_page.label}</span>
-			</a>
-		{/each}
+		<a class="siteLinkDiv" href="/" aria-current={page.url.pathname === "/"}>
+			<span class="siteLink">Translator</span>
+		</a>
+		<a class="siteLinkDiv" href="/about/" aria-current={page.url.pathname === "/about/"}>
+			<span class="siteLink">About</span>
+		</a>
 		<!--<a class="siteLink" href="/about/">About</a>-->
 	</div>
 	<main>
