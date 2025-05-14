@@ -4,9 +4,11 @@
 	let { children } = $props();
 
     let pages: { label: string, href: string }[] = [
-        { label: "Translator", href: "/" },
-        { label: "About", href: "/about/" }
+        { label: "Translator", href: "" },
+        { label: "About", href: "about/" }
     ]
+
+    console.log(import.meta.env.BASE_URL);
 </script>
 
 <div class="site">
