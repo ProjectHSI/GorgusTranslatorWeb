@@ -2,8 +2,9 @@
 	//import {PythonWorker} from "$lib/PythonWorker";
     import {onMount, untrack} from 'svelte';
     import {RAIITranslator} from "$lib/RAIITranslator";
-    import LoadingBar from "../components/LoadingBar.svelte";
-    import LoadingTips from "$lib/loadingTips"
+    //import LoadingBar from "../components/LoadingBar.svelte";
+    //import LoadingTips from "$lib/loadingTips"
+    import LoadingScreen from "../components/LoadingScreen.svelte";
     //import { onMount } from ""
 
 	let raiiTranslator: RAIITranslator | undefined = undefined;
@@ -45,7 +46,7 @@
         //console.log("T R A N S L A T E D")
 
         if (raiiTranslator != undefined && raiiTranslator.isTranslatorReady()) {
-            let translationPromise: Promise<string> | undefined;
+            //let translationPromise: Promise<string> | undefined;
 
             //switch (translationTargetOption) {
 	            //case "English -> Gorgus":
@@ -109,30 +110,28 @@
 
 <!--<h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>-->
-<div class="mainTranslationControls">
+<LoadingScreen loadingScreenActive={!translatorReady}>
+	<div class="mainTranslationControls">
 	<textarea
 			disabled={!translatorReady}
-			contenteditable="plaintext-only"
 			class="translationTextArea"
 			bind:value={inputString}>
 	</textarea>
-	<select class="translationTarget" bind:value={translationTargetOption}>
-		<option class="translationTargetOption" id="toG">English -> Gorgus</option>
-		<option class="translationTargetOption" id="toE">Gorgus -> English</option>
-	</select>
-	<textarea disabled={!translatorReady} contenteditable="false" class="translationTextArea" value={outputString}></textarea>
-</div>
-{#if translationTargetOption === "English -> Gorgus"}
-	<div class="translationOptions">
-		<div>
-			<input type="checkbox" id="toGFormal" bind:checked={shouldTranslationBeFormal}>
-			<label for="toGFormal" class="translationOption">Formal</label>
-		</div>
+		<select class="translationTarget" bind:value={translationTargetOption}>
+			<option class="translationTargetOption" id="toG">English -> Gorgus</option>
+			<option class="translationTargetOption" id="toE">Gorgus -> English</option>
+		</select>
+		<textarea disabled={!translatorReady} contenteditable="false" class="translationTextArea">{outputString}</textarea>
 	</div>
-{/if}
-{#if !translatorReady}
-	<br /><br /><LoadingBar loadingTips={LoadingTips}/>
-{/if}
+	{#if translationTargetOption === "English -> Gorgus"}
+		<div class="translationOptions">
+			<div>
+				<input type="checkbox" id="toGFormal" bind:checked={shouldTranslationBeFormal}>
+				<label for="toGFormal" class="translationOption">Formal</label>
+			</div>
+		</div>
+	{/if}
+</LoadingScreen>
 
 <style lang="scss">
     .mainTranslationControls {
@@ -143,7 +142,7 @@
 
 	.translationTextArea {
 	  width: 40%;
-	  height: 4em;
+	  height: 16em;
 	  resize: none;
 	  flex-grow: 1;
 	  //resize: vertical;

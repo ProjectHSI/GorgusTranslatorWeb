@@ -1,8 +1,10 @@
 <script lang="ts">
 	import {onMount} from "svelte";
     import type {LoadingTip, LoadingTipInterface} from "$lib/loadingTips";
+    import loadingTips from "$lib/loadingTips";
 
-    let { loadingTips }: { loadingTips: LoadingTip[] } = $props();
+    //let { loadingTips }: { loadingTips: LoadingTip[] } = $props();
+	//let loadingTips = LoadingTips
 
     function changeLoadingTip() {
         let newLoadingTip: LoadingTip = loadingTips[Math.floor(Math.random() * loadingTips.length)];
@@ -21,15 +23,19 @@
 
 <div class="loadingBar">
 	<div class="loadingBarTextBox">
-		<span class="loadingBarText">
-			{currentLoadingTip.quote}
+		<span class="loadingBarText mainLoadingBarText">
+			Loading Translator Runtime...
 		</span>
-		<br />
-		{#if currentLoadingTip.author}
-			<span class="loadingBarText loadingBarQuoteAuthor">
-				<i>~ {currentLoadingTip.author}</i>
+		<div class="loadingBarQuote">
+			<span class="loadingBarText">
+				<br />{currentLoadingTip.quote}
 			</span>
-		{/if}
+			{#if currentLoadingTip.author}
+				<span class="loadingBarText loadingBarQuoteAuthor">
+					<i>~ {currentLoadingTip.author}</i>
+				</span>
+			{/if}
+		</div>
 	</div>
 	<div class="loadingBarShine">
 
@@ -49,6 +55,12 @@
 	  overflow: hidden;
 	}
 
+	.loadingBarQuote {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	}
+
 	.loadingBarText {
 	  //width: 100%;
 	  text-align: center;
@@ -57,10 +69,17 @@
 	  font-family: system-ui;
 	}
 
+	.mainLoadingBarText {
+	  font-size: 2em;
+	}
+
 	.loadingBarQuoteAuthor {
+	  align-self: flex-end;
 	  position: relative;
+	  width: max-content;
 	  flex-grow: 1;
-	  right: -50%;
+	  text-align: right;
+	  //right: -5%;
 	  //right: 0;
 	}
 
