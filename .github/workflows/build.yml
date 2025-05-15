@@ -20,7 +20,7 @@ on:
       gorgusTranslatorRepo:
         description: "Gorgus Translator Repository"
         required: false
-        default: "https://github.com/SpookyDervish/Gorgus-Translator.git"
+        default: "https://github.com/Gorgus-Ikshrerack/Gorgus-Translator.git"
         type: string
       gorgusTranslatorBranch:
         description: "Gorgus Translator Branch"
