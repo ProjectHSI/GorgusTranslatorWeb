@@ -28,5 +28,9 @@ export default [
     { quote: "I may have overcomplicated this web translator...", author: "[Project HSI]" },
     { quote: "I helped migrate the translator from SpaCy to NLTK.", author: "[Project HSI]" },
     { quote: "I hope you like this web translator! :D", author: "[Project HSI]" },
-    { quote: "There was a bug where changing from English to Gorgus, Gorgus to English, then back, then back again would crash the translator.", author: "[Project HSI]" }
+    { quote: "There was a bug where changing from English to Gorgus, Gorgus to English, then back, then back again would crash the translator.", author: "[Project HSI]" },
+
+    { quote: "SpookyDervish does the desktop translator, [Project HSI] does the website and I mildly annoy everyone", author: "the-trumpeter" },
+    { quote: "It is I, the-trumpeter.", author: "the-trumpeter" }
+
 ] as LoadingTip[];
