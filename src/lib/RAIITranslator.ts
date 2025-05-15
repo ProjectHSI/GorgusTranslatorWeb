@@ -170,4 +170,13 @@ export class RAIITranslator {
         });
         //this.raiiPython.stdin(`[GTW_I]: [G]: {${stringToTranslate.replace("\n", "")}}\n`);
     }
+
+    stopVm() {
+        if (!this.pythonWorker) {
+            //console.log(this.vmActive)
+            throw new Error("bruh");
+        }
+
+        this.pythonWorker.terminate()
+    }
 }

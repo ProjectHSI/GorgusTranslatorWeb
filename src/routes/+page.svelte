@@ -5,6 +5,7 @@
     //import LoadingBar from "../components/LoadingBar.svelte";
     //import LoadingTips from "$lib/loadingTips"
     import LoadingScreen from "../components/LoadingScreen.svelte";
+    import {onNavigate} from "$app/navigation";
     //import { onMount } from ""
 
 	let raiiTranslator: RAIITranslator | undefined = undefined;
@@ -22,6 +23,10 @@
         await raiiTranslator.waitUntilTranslatorReady();
 
 		translatorReady = true;
+    });
+
+    onNavigate(() => {
+        raiiTranslator?.stopVm();
     })
 
     //raiiPython.runModule();
