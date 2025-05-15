@@ -23,15 +23,10 @@ export default defineConfig({
 
 	build: {
 		cssMinify: "lightningcss",
-		minify: "esbuild",
 		/*watch: {
 			include: ["**!/python_*!/!**"]
 		}*/
-		sourcemap: "inline",
-		manifest: "vite_manifest.json",
-		ssrManifest: "vite_ssrmanifest.json",
-		emptyOutDir: true,
-		assetsInlineLimit: Infinity
+		sourcemap: "inline"
 	},
 	server: {
 		headers: {
