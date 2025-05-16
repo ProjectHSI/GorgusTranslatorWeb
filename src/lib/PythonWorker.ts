@@ -223,12 +223,15 @@ class _PythonWorker {
                                 Module.FS.writeFile(`${libraryPath}/${jsZipFile}`, await jsZip.files[jsZipFile].async("uint8array"));
                                 //
                             }
+
+                            console.log(`Extracted library "${library}" to "${libraryPath}".`);
                         } else {
                             console.log(`Saving library "${library}" to "lib/python3.14/packages/${library}.zip".`);
 
                             Module.FS.writeFile(`/home/web_user/gorgus/lib/python3.14/packages/${library}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
                             //console.log(`lib/python3.14/packages/${library}.zip`);
 
+                            console.log(`Saved library "${library}" to "lib/python3.14/packages/${library}.zip".`);
                         }
                     })());
                     //await Promise.all(downloadPromises);
