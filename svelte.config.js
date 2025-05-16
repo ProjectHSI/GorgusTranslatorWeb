@@ -3,11 +3,17 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const config = {
 	preprocess: vitePreprocess({ script: true, style: true }),
-	kit: { adapter: adapter({
+	kit: {
+		adapter: adapter({
 			fallback: "404.html"
-		}), paths: {
+		}),
+		paths: {
 			base: process.argv.includes('dev') ? "" : "/GorgusTranslatorWeb"
-		} }
+		},
+		serviceWorker: {
+			register: false
+		}
+	},
 };
 
 export default config;
