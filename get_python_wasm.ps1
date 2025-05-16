@@ -24,7 +24,14 @@ if ($tag -ne "3.15") {
     git checkout $tag
 }
 
-python Tools/wasm/emscripten build -- --config-cache
+$ENV:EM_COMPILER_WRAPPER=ccache
+
+#python Tools/wasm/emscripten build -- --config-cache --with-pydebug
+python Tools/wasm/emscripten configure-build-python -- --config-cache --with-pydebug CC="ccache gcc" CXX="ccache g++"
+python Tools/wasm/emscripten make-build-python
+python Tools/wasm/emscripten make-libffi
+python Tools/wasm/emscripten configure-host -- --config-cache
+python Tools/wasm/emscripten make-host
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Failed to build Python Emscripten!"
