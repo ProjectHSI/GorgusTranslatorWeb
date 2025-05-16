@@ -189,7 +189,16 @@ jobs:
         run: ./download_pip.ps1
         shell: pwsh
 
+      - name: Setup NLTK Cache
+        id: nltk-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./src/lib/nltk
+          key: nltk-cache-${{ runner.os }}
+
       - name: Download NLTK Dependencies
+        if: steps.nltk-cache.outputs.cache-hit != 'true'
         run: ./download_nltk.ps1
         shell: pwsh
 
