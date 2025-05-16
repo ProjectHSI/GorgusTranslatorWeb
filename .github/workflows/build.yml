@@ -193,10 +193,6 @@ jobs:
         run: ./download_nltk.ps1
         shell: pwsh
 
-      - name: Copy coi-serviceworker
-        run: Copy-Item node_modules/coi-serviceworker/coi-serviceworker.js static/
-        shell: pwsh
-
       - name: Package Prior Dependencies
         run: node ./src/lib/fsSetup.compile.ts
         shell: pwsh
