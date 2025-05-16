@@ -14,11 +14,11 @@
 	<tbody>
 		<tr>
 			<td>Gorgus Translator Web</td>
-			<td>{gtwHash}</td>
+			<td><span class="gitHash">{gtwHash}</span></td>
 		</tr>
 		<tr>
 			<td>Gorgus Translator</td>
-			<td>{gtHash}</td>
+			<td><span class="gitHash">{gtHash}</span></td>
 		</tr>
 	</tbody>
 </table>
@@ -26,6 +26,10 @@
 <style lang="scss">
   span, h1, p, table {
 	font-family: system-ui;
+  }
+
+  .gitHash {
+    font-family: monospace;
   }
 
   table {
