@@ -3,6 +3,6 @@
 # so deal with it :tm:
 
 # Thankfully - "regex" (pip library) is API compatible w/ "re", so we can intentionally namespace pollute here.
-print("regex import")
+#print("regex import")
 
 from re import *
