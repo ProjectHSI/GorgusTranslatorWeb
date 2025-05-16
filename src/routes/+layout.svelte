@@ -1,13 +1,31 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { base } from '$app/paths';
+    import { dev } from '$app/environment';
+    import {invalidateAll} from "$app/navigation";
 
 	let { children } = $props();
 
     let pages: { label: string, href: string }[] = [
         { label: "Translator", href: "" },
         { label: "About", href: "about/" }
-    ]
+    ];
+
+    (async () => {
+        if (!dev && 'serviceWorker' in navigator) {
+	        let serviceWorkerRegistration: ServiceWorkerRegistration = await navigator.serviceWorker.register('./service-worker.js');
+
+            serviceWorkerRegistration.addEventListener("updatefound", () => {
+                console.log('refresh');
+                location.reload();
+            });
+
+            if (serviceWorkerRegistration.active && !navigator.serviceWorker.controller) {
+                console.log("refresh");
+                location.reload();
+            }
+	    }
+    })();
 
     //console.log("Base Path", import.meta.env.BASE_URL);
 
