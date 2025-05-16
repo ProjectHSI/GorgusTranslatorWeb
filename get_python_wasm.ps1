@@ -31,7 +31,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-New-Item -Type Directory ../src/lib/python/wasm
+try { New-Item -Type Directory ../src/lib/python/wasm } catch { }
 Copy-Item "cross-build/wasm32-emscripten/build/python/web_example/python$tag.zip"  ../src/lib/python/wasm
 Copy-Item "cross-build/wasm32-emscripten/build/python/python.wasm"                 ../src/lib/python/wasm
 Copy-Item "cross-build/wasm32-emscripten/build/python/python.mjs"                  ../src/lib/python/wasm
