@@ -19,7 +19,7 @@
 		"lightningcss": "^1.30.1",
 		"sass": "^1.88.0",
 		"svelte": "^5.30.1",
-		"svelte-check": "^4.2.0",
+		"svelte-check": "^4.2.1",
 		"typescript": "^5.0.0",
 		"vite": "^6.3.5",
 		"vite-plugin-compile-time": "npm:@projecthsi/vite-plugin-compile-time@^0.4.6",
