@@ -203,8 +203,10 @@ class _PythonWorker {
                         const libraryResponseBuffer = await libraryResponse.arrayBuffer();
 
                         // prevent the overlay from getting overlayed :tm:
-                        if (library != "overlays" && library != "gorgus") {
-                            console.log(`Extracting library "${library}" to "/home/web_user/gorgus/lib/python3.14/packages/".`);
+                        if (library != "overlays") {
+                            const libraryPath = library == "gorgus" ? "/home/web_user/gorgus/lib/python3.14/packages/" : "/home/web_user/gorgus/gorgus_translator/"
+
+                            console.log(`Extracting library "${library}" to "${libraryPath}".`);
 
                             let jsZip = await JSZip.loadAsync(libraryResponseBuffer);
 
@@ -217,8 +219,8 @@ class _PythonWorker {
                                 const splitFileName = jsZipFile.split("/");
 
                                 //console.log(jsZipFile);
-                                Module.FS.mkdirTree(`/home/web_user/gorgus/lib/python3.14/packages/${splitFileName.slice(0, splitFileName.length - 1).join("/")}`);
-                                Module.FS.writeFile(`/home/web_user/gorgus/lib/python3.14/packages/${jsZipFile}`, await jsZip.files[jsZipFile].async("uint8array"));
+                                Module.FS.mkdirTree(`${libraryPath}/${splitFileName.slice(0, splitFileName.length - 1).join("/")}`);
+                                Module.FS.writeFile(`${libraryPath}/${jsZipFile}`, await jsZip.files[jsZipFile].async("uint8array"));
                                 //
                             }
                         } else {
