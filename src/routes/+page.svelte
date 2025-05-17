@@ -7,9 +7,14 @@
     import LoadingScreen from "../components/LoadingScreen.svelte";
     import {beforeNavigate, onNavigate} from "$app/navigation";
     import {page} from "$app/state";
+    import {PythonWorker} from "$lib/PythonWorker.Types";
+
+    let loadingLogs: string[] = $state([]);
     //import { onMount } from ""
 
 	let raiiTranslator: RAIITranslator | undefined = undefined;
+
+    let dependencies: PythonWorker.DependencyGroups | undefined = $state()
 
     onMount(async () => {
         raiiTranslator = new RAIITranslator(fetch,
@@ -20,6 +25,19 @@
                 }
             }
             );
+
+        raiiTranslator.getPythonWorker().addEventListener("message", (event) => {
+           const eventData = event.data as PythonWorker.Command;
+
+           switch (eventData.command_type) {
+               case PythonWorker.CommandType.WW_Log:
+                   loadingLogs.push(eventData.log);
+                   break;
+               case PythonWorker.CommandType.WW_Dependency:
+                   dependencies = eventData.dependencyGroups;
+                   break;
+           }
+        });
 
         await raiiTranslator.waitUntilTranslatorReady();
 
@@ -123,7 +141,7 @@
 
 <!--<h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>-->
-<LoadingScreen loadingScreenActive={!translatorReady}>
+<LoadingScreen dependencies={dependencies} loadingLogs={loadingLogs} loadingScreenActive={!translatorReady}>
 	<div class="mainTranslationControls">
 	<textarea
 			disabled={!translatorReady}

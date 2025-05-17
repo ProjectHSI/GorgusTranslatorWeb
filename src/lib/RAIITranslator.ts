@@ -171,6 +171,13 @@ export class RAIITranslator {
         //this.raiiPython.stdin(`[GTW_I]: [G]: {${stringToTranslate.replace("\n", "")}}\n`);
     }
 
+    getPythonWorker() {
+        if (!this.pythonWorker)
+            throw new Error();
+
+        return this.pythonWorker;
+    }
+
     stopVm() {
         if (!this.pythonWorker) {
             //console.log(this.vmActive)

@@ -47,12 +47,13 @@
 		</a>
 		<!--<a class="siteLink" href="/about/">About</a>-->
 	</div>
-	<main>
-		<div class="siteMain">
-
+	<div class="siteMain">
+		<!--<main>--><!--{@render children()}-->
+		<div class="siteChildrenContainer">
+			{@render children()}
 		</div>
-		{@render children()}
-	</main>
+		<!--</main>-->
+	</div>
 </div>
 
 <style lang="scss">
@@ -60,7 +61,10 @@
 	  display: flex;
 	  flex-direction: column;
 
-	  min-height: 100vh;
+	  margin: 8px;
+
+	  width: calc(100dvw - 16px);
+	  height: calc(100dvh - 16px);
 	}
 
 	.siteHeader {
@@ -108,7 +112,14 @@
 	}
 
 	.siteMain {
+	  display: flex;
 	  flex-grow: 1;
-	  overflow: auto;
+	  //align-items: stretch;
+	  //overflow: auto;
+	}
+
+	.siteChildrenContainer {
+	  width: 100%;
+	  height: 100%;
 	}
 </style>

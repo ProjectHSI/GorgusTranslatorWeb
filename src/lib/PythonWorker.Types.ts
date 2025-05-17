@@ -7,6 +7,9 @@ export namespace PythonWorker {
 
         VM_Ready,
         VM_Stdout,
+
+        WW_Log,
+        WW_Dependency
     }
 
     export interface StartupCommand {
@@ -32,10 +35,45 @@ export namespace PythonWorker {
         stdInBuffer: SharedArrayBuffer;
     }
 
+    export enum LogLevel {
+        INFO,
+        WARN
+    }
+
+    export const logLevelToColour: { [index in keyof typeof LogLevel]: string } = {
+        INFO: "white",
+        WARN: "yellow"
+    }
+
+    export interface WebWorkerLogEvent {
+        command_type: CommandType.WW_Log,
+        log: string,
+        log_level: LogLevel
+    }
+
+    export interface DependencyState {
+        name: string,
+        status: string
+    }
+
+    export interface DependencyGroup {
+        name: string,
+        dependencies: DependencyState[]
+    }
+
+    export type DependencyGroups = DependencyGroup[];
+
+    export interface WebWorkerDependencyEvent {
+        command_type: CommandType.WW_Dependency,
+        dependencyGroups?: DependencyGroups
+    }
+
     export type Command =
         StartupCommand |
         RunCommand |
         StdStreamEvent |
         ShutdownCommand |
-        ReadyEvent;
+        ReadyEvent |
+        WebWorkerLogEvent |
+        WebWorkerDependencyEvent;
 }

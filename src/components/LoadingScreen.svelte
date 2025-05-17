@@ -1,7 +1,8 @@
 <script lang="ts">
 	import LoadingBar from "./LoadingBar.svelte";
+    import {PythonWorker} from "$lib/PythonWorker.Types";
 
-    let { children, loadingScreenActive }: { children: any, loadingScreenActive: boolean } = $props();
+    let { children, dependencies, loadingScreenActive, loadingLogs }: { children: any, dependencies: PythonWorker.DependencyGroups, loadingScreenActive: boolean, loadingLogs?: string[] } = $props();
 
     $inspect(loadingScreenActive)
 </script>
@@ -13,7 +14,7 @@
 	{#if loadingScreenActive}
 		<div class="loadingScreen">
 			<div class="loadingBarContainer">
-				<LoadingBar />
+				<LoadingBar dependencies={dependencies} loadingLogs={loadingLogs}/>
 			</div>
 		</div>
 	{/if}
@@ -23,8 +24,8 @@
 	.loadingScreenContainer {
 	  position: relative;
 
-		width: 100%;
-		height: 100%;
+	  width: 100%;
+	  height: 100%;
 
         //display: flex;
         //flex-direction: column;
@@ -48,9 +49,10 @@
 
 	.loadingBarContainer {
 		position: relative;
-		width: 90%;
-		left: 5%;
-		top: 10%;
+		width: 95%;
+	    height: 95%;
+		left: 2.5%;
+		top: 2.5%;
 	}
 
 	.loadingScreenChildren {

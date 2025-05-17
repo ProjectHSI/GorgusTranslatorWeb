@@ -10,7 +10,7 @@ def setup_sys_path():
     sys.path.insert(0, "/home/web_user/gorgus/gorgus_translator/")
     sys.path.insert(0, "/home/web_user/gorgus/lib/python3.14/packages/overlays.zip")
     sys.path.append("/home/web_user/gorgus/lib/python3.14/packages")
-    print(sys.path)
+    #print(sys.path)
     #packages_directory_string = "/home/web_user/gorgus/lib/python3.14/packages"
     #packages_directory = os.fsencode(packages_directory_string)
     #for package in os.listdir(packages_directory):

@@ -18,7 +18,6 @@ for (const nltkDatum of nltkData) {
 for (const script of scripts) {
     import(`./src/lib/python_scripts/${script}.py?raw`)
 }*/
-
 /*console.log(
     import.meta.env.BASE_URL,
     import.meta.url,
@@ -27,8 +26,9 @@ for (const script of scripts) {
     new URL(`./python_scripts/translate_to_gorgus.py`, import.meta.url).href
 );*/
 //throw new Error();*/
-
 import {PythonWorker} from "$lib/PythonWorker.Types";
+import CommandType = PythonWorker.CommandType;
+import DependencyGroups = PythonWorker.DependencyGroups;
 //import {monitorEventLoopDelay} from "node:perf_hooks";
 
 console.log("we runnin'")
@@ -58,6 +58,21 @@ class _PythonWorker {
     private readIndex = 0;
     private returnedNull: number = 0;
 
+    private log(data: string, logLevel: PythonWorker.LogLevel = PythonWorker.LogLevel.INFO) {
+        postMessage({
+            command_type: CommandType.WW_Log,
+            log: data,
+            log_level: logLevel
+        } as PythonWorker.WebWorkerLogEvent);
+    }
+
+    private updateDependencyGroups(data?: DependencyGroups) {
+        postMessage({
+            command_type: CommandType.WW_Dependency,
+            dependencyGroups: data
+        } as PythonWorker.WebWorkerDependencyEvent)
+    }
+
     //stdin(): number | null {
 
 
@@ -81,7 +96,7 @@ class _PythonWorker {
             if (emscriptenRuntimeReady && prerunReady) {
                 this.emscriptenRuntimeReady = true;
 
-                console.log("Runtime ready!");
+                log("Runtime ready!");
 
                 if (this.runtimeReadyCallback)
                     this.runtimeReadyCallback();
@@ -145,6 +160,9 @@ class _PythonWorker {
             }
         };
 
+        const log = this.log;
+        const updateDependencyGroups = this.updateDependencyGroups;
+
         return {
             noInitialRun: true,
             onRuntimeInitialized: () => {
@@ -159,7 +177,7 @@ class _PythonWorker {
                     command_type: PythonWorker.CommandType.VM_Stdout,
                     stream_text: event
                 } as PythonWorker.StdStreamEvent);
-                console.log(event);
+                log(`[PYTHON]: ${event}`);
             },
             stdin: popStdin,
             async preRun(Module: any): Promise<void> {
@@ -183,20 +201,41 @@ class _PythonWorker {
                 //console.log(Module);
 
                 const downloadPromises: Promise<void>[] = []
+                let dependencyGroups: PythonWorker.DependencyGroups | undefined = [];
+
+                const scriptsDependencyGroup = dependencyGroups.push({ name: "Scripts", dependencies: [] }) - 1;
+                updateDependencyGroups(dependencyGroups);
 
                 for (const script of scripts) {
                     //console.log(script);
 
                     downloadPromises.push((async () => {
+                        console.log(dependencyGroups)
+                        const scriptDependencyNumber = dependencyGroups[scriptsDependencyGroup].dependencies.push({ name: script, status: "Downloading" }) - 1;
+                        updateDependencyGroups(dependencyGroups);
+
                         const scriptUrl = new URL(`./python_scripts/${script}.py`, import.meta.url).href;
                         const scriptText = await (await fetch(scriptUrl)).text();
+
+                        dependencyGroups[scriptsDependencyGroup].dependencies[scriptDependencyNumber].status = "Saving";
+                        updateDependencyGroups(dependencyGroups);
+
                         Module.FS.writeFile(`/home/web_user/gorgus/${script}.py`, scriptText, { canOwn: true });
+                        dependencyGroups[scriptsDependencyGroup].dependencies[scriptDependencyNumber].status = "Done";
+                        updateDependencyGroups(dependencyGroups);
                     })());
                     //await Promise.all(downloadPromises);
                 }
+
+                const libraryDependencyGroup = dependencyGroups.push({ name: "Libraries", dependencies: [] }) - 1;
+                updateDependencyGroups(dependencyGroups);
+
                 for (const library of libraries) {
                     downloadPromises.push((async () => {
-                        console.log(`Downloading library "${library}"...`)
+                        log(`Downloading library "${library}"...`)
+                        const libraryDependencyNumber = dependencyGroups[libraryDependencyGroup].dependencies.push({ name: library, status: "Downloading" }) - 1;
+                        updateDependencyGroups(dependencyGroups);
+
                         const libraryUrl = new URL(`./python/lib/${library}.zip`, import.meta.url).href;
                         const libraryResponse = await fetchFunction(libraryUrl);
 
@@ -206,7 +245,9 @@ class _PythonWorker {
                         if (library != "overlays") {
                             const libraryPath = library == "gorgus" ? "/home/web_user/gorgus/lib/python3.14/packages/" : "/home/web_user/gorgus/gorgus_translator/"
 
-                            console.log(`Extracting library "${library}" to "${libraryPath}".`);
+                            log(`Extracting library "${library}" to "${libraryPath}".`);
+                            dependencyGroups[libraryDependencyGroup].dependencies[libraryDependencyNumber].status = "Extracting";
+                            updateDependencyGroups(dependencyGroups);
 
                             let jsZip = await JSZip.loadAsync(libraryResponseBuffer);
 
@@ -224,22 +265,33 @@ class _PythonWorker {
                                 //
                             }
 
-                            console.log(`Extracted library "${library}" to "${libraryPath}".`);
+                            log(`Extracted library "${library}" to "${libraryPath}".`);
                         } else {
-                            console.log(`Saving library "${library}" to "lib/python3.14/packages/${library}.zip".`);
+                            log(`Saving library "${library}" to "lib/python3.14/packages/${library}.zip".`);
+                            dependencyGroups[libraryDependencyGroup].dependencies[libraryDependencyNumber].status = "Saving";
+                            updateDependencyGroups(dependencyGroups);
 
                             Module.FS.writeFile(`/home/web_user/gorgus/lib/python3.14/packages/${library}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
                             //console.log(`lib/python3.14/packages/${library}.zip`);
 
-                            console.log(`Saved library "${library}" to "lib/python3.14/packages/${library}.zip".`);
+                            log(`Saved library "${library}" to "lib/python3.14/packages/${library}.zip".`);
                         }
+
+                        dependencyGroups[libraryDependencyGroup].dependencies[libraryDependencyNumber].status = "Done";
+                        updateDependencyGroups(dependencyGroups);
                     })());
                     //await Promise.all(downloadPromises);
                 }
+
+                const nltkDependencyGroup = dependencyGroups.push({ name: "NLTK", dependencies: [] }) - 1;
+                updateDependencyGroups(dependencyGroups);
+
                 for (const nltkDataFile of nltkData) {
                     downloadPromises.push((async () => {
                         //console.log(`$lib/nltk/${nltkDataFile.directory}/${nltkDataFile.file}.zip?url`)
-                        console.log(`Saving NLTK Data "${nltkDataFile.directory + "." + nltkDataFile.file}" to "nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip".`);
+                        log(`Downloading NLTK Data "${nltkDataFile.directory + "." + nltkDataFile.file}" to "nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip".`);
+                        const nltkDependencyNumber = dependencyGroups[nltkDependencyGroup].dependencies.push({ name: nltkDataFile.directory + "." + nltkDataFile.file, status: "Downloading" }) - 1;
+                        updateDependencyGroups(dependencyGroups);
 
                         const combinedDataFile = nltkDataFile.directory + "." + nltkDataFile.file;
                         //const preProcessUrl = `./nltk/${nltkDataFile.directory}/${nltkDataFile.file}.zip?url`;
@@ -247,6 +299,9 @@ class _PythonWorker {
                         const libraryUrl = new URL(`./nltk/${combinedDataFile}.zip`, import.meta.url).href;
                         const libraryResponse = await fetchFunction(libraryUrl);
                         const libraryResponseBuffer = await libraryResponse.arrayBuffer();
+
+                        dependencyGroups[nltkDependencyGroup].dependencies[nltkDependencyNumber].status = "Extracting";
+                        updateDependencyGroups(dependencyGroups);
 
                         let jsZip = await JSZip.loadAsync(libraryResponseBuffer);
 
@@ -264,13 +319,22 @@ class _PythonWorker {
                             //
                         }
 
+                        dependencyGroups[nltkDependencyGroup].dependencies[nltkDependencyNumber].status = "Saving";
+                        updateDependencyGroups(dependencyGroups);
+
                         Module.FS.mkdirTree(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}`)
                         Module.FS.writeFile(`/home/web_user/gorgus/nltk_data/${nltkDataFile.directory}/${nltkDataFile.file}.zip`, new Uint8Array(libraryResponseBuffer), {canOwn: true});
+
+                        dependencyGroups[nltkDependencyGroup].dependencies[nltkDependencyNumber].status = "Done";
+                        updateDependencyGroups(dependencyGroups);
                     })());
                     //await Promise.all(downloadPromises);
                 }
 
                 await Promise.all(downloadPromises);
+
+                dependencyGroups = undefined;
+                updateDependencyGroups(dependencyGroups);
 
                 //Module.ENV.NLTK_DATA = "/home/web_user/gorgus/nltk_data/"
 
