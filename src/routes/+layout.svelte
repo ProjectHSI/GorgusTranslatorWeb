@@ -126,6 +126,8 @@
 
 	  width: calc(100dvw - 16px);
 	  height: calc(100dvh - 16px);
+
+	  font-family: system-ui;
 	}
 
 	.siteHeader {

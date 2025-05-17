@@ -1,5 +1,5 @@
 #print ("script run...")
-
+import json
 import sys
 import setup
 import re
@@ -23,10 +23,36 @@ import urllib
 #print(gorgus)
 
 #import os
+import translations
 import translater
+
+rich_text_regex = re.compile("\\[.*?]")
+
+def create_dictionary_word(word):
+    word_output = { "word": word, "english_words": translations.translation_dictionary[word] }
+
+    if word in translations.dictionary_information.informal_words:
+        word_output["informal"] = True
+    else:
+        word_output["informal"] = False
+
+    if word in translations.dictionary_information.extra_info:
+        word_output["extra_info"] = rich_text_regex.sub("", translations.dictionary_information.extra_info[word])
+
+def get_dictionary():
+    words = []
+
+    for gorgus_word in translations.translation_dictionary:
+        if gorgus_word.startswith("<") and gorgus_word.endswith(">"):
+            continue
+
+        words.append(create_dictionary_word(gorgus_word))
+
+    return json.dumps(words)
 
 #translate_re_e = re.compile("\\[GTW_I]: \\[(E)]: \\{(.*)}")
 translate_re = re.compile("\\[GTW_I]: \\[([EG]) \\[(!?)F]]: \\{(.*)}")
+dictionary_re = re.compile("\\[GTW_I]: \\[DG]")
 
 print('[GTW_O]: runtime_ready')
 
@@ -55,6 +81,7 @@ while True:
     #print("regex match")
 
     translate_re_match = translate_re.match(line.rstrip())
+    dictionary_re_match = dictionary_re.match(line.rstrip())
 
     #print(translate_re_match[1])
     #print(translate_re_match[2])
@@ -74,6 +101,8 @@ while True:
             ).encode("utf-8")
         ).decode("utf-8") + "}")
         #print(translate_re_match[1], translate_re_match[2])
+    elif dictionary_re_match is not None:
+        print(f"[GTW_O]: [D]: {get_dictionary()}")
     else:
         print("[GTW_O]: [IW]: Invalid command! (didn't match any regex)")
         continue

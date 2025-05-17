@@ -56,7 +56,7 @@ export class RAIITranslator {
 
                     this.pythonWorker.postMessage({
                         command_type: CommandType.Run_VM,
-                        args: ["translate_to_gorgus.py"]
+                        args: ["translate.py"]
                     } as PythonWorker.RunCommand);
 
                     this.vmActive = true;
@@ -84,7 +84,7 @@ export class RAIITranslator {
         console.log("send");
 
         //this.raiiPython = new RAIIPythonWorker(fetchFunction, () => {
-            //this.raiiPython.runModule(["/home/web_user/gorgus/translate_to_gorgus.py"]);
+            //this.raiiPython.runModule(["/home/web_user/gorgus/translate.py"]);
 
             //if (_runtimeReadyCallback) {
                 //_runtimeReadyCallback()
@@ -105,6 +105,7 @@ export class RAIITranslator {
     }
 
     private translationOutputRegex = new RegExp("\\[GTW_O]: \\[TO]: \\[([EG]) \\[(!?)F]] \\{(.*)} \\{(.*)}");
+    private dictionaryRegex = new RegExp("\\[GTW_O]: \\[D]: (.*)");
 
     private stdin(feedToStdIn: string) {
         if (!this.vmActive || this.pythonWorkerStdIn == undefined || this.pythonWorkerStdInInt32 == undefined) {
@@ -128,6 +129,31 @@ export class RAIITranslator {
 
     private textEncoder = new TextEncoder();
     private textDecoder = new TextDecoder();
+
+    getDictionary(): Promise<{
+        word: string,
+        word_english: string[],
+        informal: boolean,
+        extra_info?: string
+    }[]> {
+        return new Promise((resolve, reject) => {
+            if (!this.vmActive || this.pythonWorkerStdIn == undefined || this.pythonWorkerStdInInt32 == undefined) {
+                console.log(this.vmActive, this.pythonWorkerStdIn, this.pythonWorkerStdInInt32)
+                throw new Error("bruh");
+            }
+
+            this.stdoutCallbacks.push((data) => {
+                let dictionaryRegexExec = this.translationOutputRegex.exec(data);
+
+                if (dictionaryRegexExec == null)
+                    return;
+
+                resolve(JSON.parse(dictionaryRegexExec[1]));
+            });
+
+            this.stdin(`[GTW_I]: [DG]`);
+        });
+    }
 
     translate(stringToTranslate: string, target: string, formal: boolean = true): Promise<string> {
         //this.stdoutPromises[{ type: "G", text: stringToTranslate }] = new Promise();
