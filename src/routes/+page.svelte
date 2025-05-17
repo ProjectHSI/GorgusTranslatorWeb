@@ -31,9 +31,10 @@
 
         //console.log("T R A N S L A T E D")
 
-	    const raiiTranslator: RAIITranslator | undefined = getContext("raiiTranslator");
+	    const raiiTranslatorMethod: () => (RAIITranslator | undefined) = getContext("raiiTranslator");
+        const raiiTranslator = raiiTranslatorMethod();
 
-        if (raiiTranslator != undefined && raiiTranslator.isTranslatorReady()) {
+        if (raiiTranslator !== undefined && raiiTranslator.isTranslatorReady()) {
             //let translationPromise: Promise<string> | undefined;
 
             //switch (translationTargetOption) {
