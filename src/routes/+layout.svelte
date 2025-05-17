@@ -89,6 +89,9 @@
 		<a class="siteLinkDiv" href="{base}/" aria-current={page.url.pathname === `${base}/` ? "page" : ""}>
 			<span class="siteLink">Translator</span>
 		</a>
+		<a class="siteLinkDiv" href="{base}/dictionary" aria-current={page.url.pathname === `${base}/dictionary/` ? "page" : ""}>
+			<span class="siteLink">Dictionary</span>
+		</a>
 		<a class="siteLinkDiv" href="{base}/about" aria-current={page.url.pathname === `${base}/about/` ? "page" : ""}>
 			<span class="siteLink">About</span>
 		</a>
