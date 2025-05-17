@@ -2,7 +2,7 @@
 	import LoadingBar from "./LoadingBar.svelte";
     import {PythonWorker} from "$lib/PythonWorker.Types";
 
-    let { children, dependencies, loadingScreenActive, loadingLogs }: { children: any, dependencies: PythonWorker.DependencyGroups, loadingScreenActive: boolean, loadingLogs?: string[] } = $props();
+    let { children, dependencies, loadingScreenActive, loadingLogs }: { children: any, dependencies: PythonWorker.DependencyGroups | undefined, loadingScreenActive: boolean, loadingLogs?: string[] } = $props();
 
     $inspect(loadingScreenActive)
 </script>

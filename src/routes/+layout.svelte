@@ -2,7 +2,12 @@
     import { page } from '$app/state';
     import { base } from '$app/paths';
     import { dev } from '$app/environment';
-    import {invalidateAll} from "$app/navigation";
+    import {afterNavigate, invalidateAll} from "$app/navigation";
+    import {RAIITranslator} from "$lib/RAIITranslator";
+    import {PythonWorker} from "$lib/PythonWorker.Types";
+    import {onMount, setContext} from "svelte";
+    import LoadingScreen from "../components/LoadingScreen.svelte";
+    import LoadingBar from "../components/LoadingBar.svelte";
 
 	let { children } = $props();
 
@@ -27,6 +32,10 @@
 	    }
     })();
 
+    afterNavigate((navigation) => {
+        let data: App.PageData
+    })
+
     //console.log("Base Path", import.meta.env.BASE_URL);
 
     /*if ('serviceWorker' in navigator) {
@@ -34,6 +43,44 @@
             import.meta.env.MODE === 'production' ? '/SW.js' : '/SW.js?dev-sw'
         )
     }*/
+
+    let translatorReady: boolean = $state(false);
+
+    let loadingLogs: string[] = $state([]);
+    let dependencies: PythonWorker.DependencyGroups | undefined = $state();
+
+    let raiiTranslator: RAIITranslator | undefined = undefined;
+
+    setContext('raiiTranslator', () => raiiTranslator);
+    setContext('translatorReady', () => translatorReady);
+
+    onMount(async () => {
+        raiiTranslator = new RAIITranslator(fetch,
+            () => {
+                if (raiiTranslator != undefined) {
+                    //console.log("がめお！さと！")
+                    //raiiTranslator.translateToGorgus("JUDGEMENT!")
+                }
+            }
+        );
+
+        raiiTranslator.getPythonWorker().addEventListener("message", (event) => {
+            const eventData = event.data as PythonWorker.Command;
+
+            switch (eventData.command_type) {
+                case PythonWorker.CommandType.WW_Log:
+                    loadingLogs.push(eventData.log);
+                    break;
+                case PythonWorker.CommandType.WW_Dependency:
+                    dependencies = eventData.dependencyGroups;
+                    break;
+            }
+        });
+
+        await raiiTranslator.waitUntilTranslatorReady();
+
+        translatorReady = true;
+    });
 </script>
 
 <div class="site">
@@ -47,10 +94,21 @@
 		</a>
 		<!--<a class="siteLink" href="/about/">About</a>-->
 	</div>
+	{#if !page.data.usesTranslator && !translatorReady}
+		<div class="freeFloatingLoadingBar">
+			<LoadingBar dependencies={dependencies} loadingLogs={loadingLogs}/>
+		</div>
+	{/if}
 	<div class="siteMain">
 		<!--<main>--><!--{@render children()}-->
 		<div class="siteChildrenContainer">
-			{@render children()}
+			{#if page.data.usesTranslator}
+				<LoadingScreen dependencies={dependencies} loadingLogs={loadingLogs} loadingScreenActive={!translatorReady}>
+					{@render children()}
+				</LoadingScreen>
+			{:else}
+				{@render children()}
+			{/if}
 		</div>
 		<!--</main>-->
 	</div>
@@ -121,5 +179,9 @@
 	.siteChildrenContainer {
 	  width: 100%;
 	  height: 100%;
+	}
+
+	.freeFloatingLoadingBar {
+	  height: 20%;
 	}
 </style>

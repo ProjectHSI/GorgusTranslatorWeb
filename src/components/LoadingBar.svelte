@@ -31,7 +31,7 @@
 </script>
 
 
-<div transition:fade={{ duration: 200 }} class={`loadingBar ${extendLoadingScreen ? "loadingBarExtended": ""}`}>
+<div class={`loadingBar ${extendLoadingScreen ? "loadingBarExtended": ""}`}>
 	<div class="loadingBarTextBox">
 		<span class="loadingBarText mainLoadingBarText">
 			Loading Translator Runtime...
@@ -326,8 +326,8 @@
 	  background-color: cornflowerblue;
 
 	  animation-name: loadingBarShineAnimation;
-	  animation-duration: 1s;
-	  animation-timing-function: linear;
+	  animation-duration: 5s;
+	  animation-timing-function: cubic-bezier(0,.85,1,.15);
 	  animation-iteration-count: infinite;
 	}
 

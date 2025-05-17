@@ -1,6 +1,6 @@
 <script lang="ts">
 	//import {PythonWorker} from "$lib/PythonWorker";
-    import {onMount, untrack} from 'svelte';
+    import {getContext, onMount, untrack} from 'svelte';
     import {RAIITranslator} from "$lib/RAIITranslator";
     //import LoadingBar from "../components/LoadingBar.svelte";
     //import LoadingTips from "$lib/loadingTips"
@@ -9,57 +9,12 @@
     import {page} from "$app/state";
     import {PythonWorker} from "$lib/PythonWorker.Types";
 
-    let loadingLogs: string[] = $state([]);
-    //import { onMount } from ""
-
-	let raiiTranslator: RAIITranslator | undefined = undefined;
-
-    let dependencies: PythonWorker.DependencyGroups | undefined = $state()
-
-    onMount(async () => {
-        raiiTranslator = new RAIITranslator(fetch,
-	        () => {
-                if (raiiTranslator != undefined) {
-                    //console.log("がめお！さと！")
-                    //raiiTranslator.translateToGorgus("JUDGEMENT!")
-                }
-            }
-            );
-
-        raiiTranslator.getPythonWorker().addEventListener("message", (event) => {
-           const eventData = event.data as PythonWorker.Command;
-
-           switch (eventData.command_type) {
-               case PythonWorker.CommandType.WW_Log:
-                   loadingLogs.push(eventData.log);
-                   break;
-               case PythonWorker.CommandType.WW_Dependency:
-                   dependencies = eventData.dependencyGroups;
-                   break;
-           }
-        });
-
-        await raiiTranslator.waitUntilTranslatorReady();
-
-		translatorReady = true;
-    });
-
-    let shouldStopVmOnNavigate = true;
-
-    beforeNavigate((navigation) => {
-        shouldStopVmOnNavigate = navigation.from?.route.id !== page.route.id
-    })
-
-    onNavigate(() => {
-        if (shouldStopVmOnNavigate)
-            raiiTranslator?.stopVm();
-    })
+    let translatorReady: boolean = getContext("translatorReady");
 
     //raiiPython.runModule();
     let inputString: string = $state("");
     let outputString: string = $state("");
     let firstTime: boolean = false;
-    let translatorReady = $state(false);
     let doNotTranslate = false;
 
     $effect(() => {
@@ -75,6 +30,8 @@
         }
 
         //console.log("T R A N S L A T E D")
+
+	    const raiiTranslator: RAIITranslator | undefined = getContext("raiiTranslator");
 
         if (raiiTranslator != undefined && raiiTranslator.isTranslatorReady()) {
             //let translationPromise: Promise<string> | undefined;
@@ -141,28 +98,26 @@
 
 <!--<h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>-->
-<LoadingScreen dependencies={dependencies} loadingLogs={loadingLogs} loadingScreenActive={!translatorReady}>
-	<div class="mainTranslationControls">
-	<textarea
-			disabled={!translatorReady}
-			class="translationTextArea"
-			bind:value={inputString}>
-	</textarea>
-		<select class="translationTarget" bind:value={translationTargetOption}>
-			<option class="translationTargetOption" id="toG">English -> Gorgus</option>
-			<option class="translationTargetOption" id="toE">Gorgus -> English</option>
-		</select>
-		<textarea disabled={!translatorReady} contenteditable="false" class="translationTextArea">{outputString}</textarea>
-	</div>
-	{#if translationTargetOption === "English -> Gorgus"}
-		<div class="translationOptions">
-			<div>
-				<input type="checkbox" id="toGFormal" bind:checked={shouldTranslationBeFormal}>
-				<label for="toGFormal" class="translationOption">Formal</label>
-			</div>
+<div class="mainTranslationControls">
+<textarea
+		disabled={!translatorReady}
+		class="translationTextArea"
+		bind:value={inputString}>
+</textarea>
+	<select class="translationTarget" bind:value={translationTargetOption}>
+		<option class="translationTargetOption" id="toG">English -> Gorgus</option>
+		<option class="translationTargetOption" id="toE">Gorgus -> English</option>
+	</select>
+	<textarea disabled={!translatorReady} contenteditable="false" class="translationTextArea">{outputString}</textarea>
+</div>
+{#if translationTargetOption === "English -> Gorgus"}
+	<div class="translationOptions">
+		<div>
+			<input type="checkbox" id="toGFormal" bind:checked={shouldTranslationBeFormal}>
+			<label for="toGFormal" class="translationOption">Formal</label>
 		</div>
-	{/if}
-</LoadingScreen>
+	</div>
+{/if}
 
 <style lang="scss">
     .mainTranslationControls {
