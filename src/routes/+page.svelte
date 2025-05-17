@@ -5,7 +5,8 @@
     //import LoadingBar from "../components/LoadingBar.svelte";
     //import LoadingTips from "$lib/loadingTips"
     import LoadingScreen from "../components/LoadingScreen.svelte";
-    import {onNavigate} from "$app/navigation";
+    import {beforeNavigate, onNavigate} from "$app/navigation";
+    import {page} from "$app/state";
     //import { onMount } from ""
 
 	let raiiTranslator: RAIITranslator | undefined = undefined;
@@ -25,8 +26,15 @@
 		translatorReady = true;
     });
 
+    let shouldStopVmOnNavigate = true;
+
+    beforeNavigate((navigation) => {
+        shouldStopVmOnNavigate = navigation.from?.route.id !== page.route.id
+    })
+
     onNavigate(() => {
-        raiiTranslator?.stopVm();
+        if (shouldStopVmOnNavigate)
+            raiiTranslator?.stopVm();
     })
 
     //raiiPython.runModule();
