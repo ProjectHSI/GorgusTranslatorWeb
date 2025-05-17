@@ -86,10 +86,10 @@
 <div class="site">
 	<div class="siteHeader">
 		<!--<a class="siteLink" href="/">Translator</a>-->
-		<a class="siteLinkDiv" href="{base}/" aria-current={page.url.pathname === "/"}>
+		<a class="siteLinkDiv" href="{base}/" aria-current={page.url.pathname === `${base}/` ? "page" : ""}>
 			<span class="siteLink">Translator</span>
 		</a>
-		<a class="siteLinkDiv" href="{base}/about" aria-current={page.url.pathname === "/about/"}>
+		<a class="siteLinkDiv" href="{base}/about" aria-current={page.url.pathname === `${base}/about/` ? "page" : ""}>
 			<span class="siteLink">About</span>
 		</a>
 		<!--<a class="siteLink" href="/about/">About</a>-->
