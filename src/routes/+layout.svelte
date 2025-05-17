@@ -18,7 +18,7 @@
 
     (async () => {
         if (!dev && 'serviceWorker' in navigator) {
-	        let serviceWorkerRegistration: ServiceWorkerRegistration = await navigator.serviceWorker.register('./service-worker.js');
+	        let serviceWorkerRegistration: ServiceWorkerRegistration = await navigator.serviceWorker.register(`${base}/service-worker.js`);
 
             serviceWorkerRegistration.addEventListener("updatefound", () => {
                 console.log('refresh');
