@@ -31,13 +31,13 @@ rich_text_regex = re.compile("\\[.*?]")
 def create_dictionary_word(word):
     word_output = { "word": word, "english_words": translations.translation_dictionary[word] }
 
-    if word in translations.dictionary_information["informal_words"]:
-        word_output["informal"] = True
-    else:
-        word_output["informal"] = False
+    #if word in translations.dictionary_information["informal_words"]:
+    #    word_output["informal"] = True
+    #else:
+    #    word_output["informal"] = False
 
-    if word in translations.dictionary_information["extra_info"]:
-        word_output["extra_info"] = rich_text_regex.sub("", translations.dictionary_information["extra_info"][word])
+    if word in translations.dictionary_information["word_flags"]:
+        word_output["word_flags"] = translations.dictionary_information["word_flags"][word]
 
     return word_output
 
@@ -50,7 +50,12 @@ def get_dictionary():
 
         words.append(create_dictionary_word(gorgus_word))
 
-    return json.dumps(words)
+    return json.dumps(
+        {
+            "words": words,
+            "word_flag_presets": translations.dictionary_information["word_flag_presets"],
+        }
+    )
 
 #translate_re_e = re.compile("\\[GTW_I]: \\[(E)]: \\{(.*)}")
 translate_re = re.compile("\\[GTW_I]: \\[([EG]) \\[(!?)F]]: \\{(.*)}")

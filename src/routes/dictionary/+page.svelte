@@ -24,9 +24,9 @@
         if (searchTerm) {
             console.log("searchTerm...")
 
-            let searchingDictionary: PythonWorker.Dictionary = [];
+            let searchingDictionary: PythonWorker.Dictionary = { words: [], word_flag_presets: workingDictionary.word_flag_presets };
 
-            for (const workingDictionaryElement of workingDictionary) {
+            for (const workingDictionaryElement of workingDictionary.words) {
                 let isElementIncluded = false;
 
                 if (typeof (workingDictionaryElement.english_words) === 'string') {
@@ -46,7 +46,7 @@
                 }
 
                 if (isElementIncluded)
-                    searchingDictionary.push(workingDictionaryElement);
+                    searchingDictionary.words.push(workingDictionaryElement);
             }
 
             workingDictionary = searchingDictionary;
@@ -60,7 +60,7 @@
             return 1;
 
         let newMaximum = 1;
-        for (const dictionaryWord of siftedDictionary) {
+        for (const dictionaryWord of siftedDictionary.words) {
             if (typeof (dictionaryWord.english_words) !== 'string' && dictionaryWord.english_words.length > newMaximum) {
                 newMaximum = dictionaryWord.english_words.length
             }
@@ -68,6 +68,13 @@
 
         return newMaximum;
     });
+
+    const tagTextToCssColour: { [index: string]: { colour?: string, bold?: boolean } } = {
+        "informal": { colour: "#ff0000" },
+	    "slur": { colour: "#ffaf00", bold: true },
+		"Platonic": { colour: "#007f00" },
+	    "Romantic": { colour: "#ff00af" }
+    }
 
     $effect(() => {
         if (translatorState.raiiTranslator !== undefined && translatorState.translatorReady) {
@@ -102,7 +109,7 @@
 			</tr>
 		</thead>
 		<tbody>
-		{#each siftedDictionary as dictionaryWord, i}
+		{#each siftedDictionary.words as dictionaryWord, i}
 			<!--{@const test = console.log(dictionaryWord)}-->
 			<tr>
 				<td class="mainDictionaryTd">{dictionaryWord.word}</td>
@@ -141,7 +148,21 @@
 					</div>
 				</td>
 				<td class="mainDictionaryTd">
-					{#if dictionaryWord.informal}
+					{#if dictionaryWord.word_flags}
+						{#each dictionaryWord.word_flags as wordFlag, wordFlagIndex}
+							{@const wordFlagObject = (typeof (wordFlag) !== 'string' ? tagTextToCssColour[wordFlag.text] : (tagTextToCssColour[wordFlag] !== undefined ? tagTextToCssColour[wordFlag] : undefined))}
+							{@const wordFlagText = (typeof (wordFlag) !== 'string' ? wordFlag.text : (siftedDictionary.word_flag_presets[wordFlag] !== undefined ? siftedDictionary.word_flag_presets[wordFlag].text : wordFlag))}
+							{@const wordFlagExtension = (wordFlagIndex + 1 === dictionaryWord.word_flags.length ? "" : "; ")}
+
+							{#if wordFlagObject === undefined}
+								<span>{wordFlagText}</span><span>{wordFlagExtension}</span>
+							{:else}
+								<span style:font-weight={wordFlagObject.bold ? "bold" : ""} style:color={wordFlagObject.colour}>{wordFlagText}</span><span>{wordFlagExtension}</span>
+							{/if}
+							<!--<span style:color={siftedDictionary.word_flag_presets[wordFlag]}></span>-->
+						{/each}
+					{/if}
+					<!--{#if dictionaryWord.informal}
 						<span style:color="red">
 							{#if dictionaryWord.extra_info}
 								Informal;
@@ -150,7 +171,7 @@
 							{/if}
 						</span>
 					{/if}
-					{dictionaryWord.extra_info}
+					{dictionaryWord.extra_info}-->
 				</td>
 				<!--<td style:padding="0" style:border-left="0" style:border-right="0">
 					<table class="englishWordTable">

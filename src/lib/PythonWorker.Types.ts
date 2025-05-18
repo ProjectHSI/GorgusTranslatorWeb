@@ -77,10 +77,17 @@ export namespace PythonWorker {
         WebWorkerLogEvent |
         WebWorkerDependencyEvent;
 
+    export interface WordFlag {
+        text: string,
+        textual_tag: string
+    }
+
     export type Dictionary = {
-        word: string,
-        english_words: string[] | string,
-        informal: boolean,
-        extra_info?: string
-    }[]
+        words: {
+            word: string,
+            english_words: string[] | string,
+            word_flags?: (string | WordFlag)[]
+        }[],
+        word_flag_presets: { [index: string]: WordFlag }
+    }
 }
