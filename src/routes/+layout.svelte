@@ -3,13 +3,15 @@
     import { base } from '$app/paths';
     import { dev } from '$app/environment';
     import {afterNavigate, invalidateAll} from "$app/navigation";
-    import {RAIITranslator} from "$lib/RAIITranslator";
+    import {RAIITranslator} from "$lib/RAIITranslator.svelte";
     import {PythonWorker} from "$lib/PythonWorker.Types";
     import {onMount, setContext} from "svelte";
     import LoadingScreen from "../components/LoadingScreen.svelte";
     import LoadingBar from "../components/LoadingBar.svelte";
+    import type {TranslatorState} from "$lib/TranslatorStateManagement"
+    import {setTranslatorState} from "$lib/TranslatorStateManagement";
 
-	let { children } = $props();
+    let { children } = $props();
 
     let pages: { label: string, href: string }[] = [
         { label: "Translator", href: "" },
@@ -44,91 +46,96 @@
         )
     }*/
 
-    let translatorReady: boolean = $state(false);
+    let translatorState: TranslatorState = $state({
+	    translatorReady: false,
+	    raiiTranslator: undefined
+    })
 
-    let loadingLogs: string[] = $state([]);
-    let dependencies: PythonWorker.DependencyGroups | undefined = $state();
+    //let loadingLogs: string[] = $state([]);
+    //let dependencies: PythonWorker.DependencyGroups | undefined = $state();
 
-    let raiiTranslator: RAIITranslator | undefined = undefined;
+    //let raiiTranslator: RAIITranslator | undefined = undefined;
 
-    setContext('raiiTranslator', () => raiiTranslator);
-    setContext('translatorReady', () => translatorReady);
+    //setContext('raiiTranslator', () => raiiTranslator);
+    //setContext('translatorState', translatorState);
+    setTranslatorState(translatorState);
+    //setContext('translatorReady', () => translatorReady);
 
     onMount(async () => {
-        raiiTranslator = new RAIITranslator(fetch,
-            () => {
-                if (raiiTranslator != undefined) {
-                    //console.log("がめお！さと！")
-                    //raiiTranslator.translateToGorgus("JUDGEMENT!")
-                }
-            }
-        );
+        translatorState.raiiTranslator = new RAIITranslator(fetch, () => {});
 
-        raiiTranslator.getPythonWorker().addEventListener("message", (event) => {
-            const eventData = event.data as PythonWorker.Command;
+        await translatorState.raiiTranslator.waitUntilTranslatorReady();
 
-            switch (eventData.command_type) {
-                case PythonWorker.CommandType.WW_Log:
-                    loadingLogs.push(eventData.log);
-                    break;
-                case PythonWorker.CommandType.WW_Dependency:
-                    dependencies = eventData.dependencyGroups;
-                    break;
-            }
-        });
-
-        await raiiTranslator.waitUntilTranslatorReady();
-
-        translatorReady = true;
+        translatorState.translatorReady = true;
     });
 </script>
 
-<div class="site">
-	<div class="siteHeader">
-		<!--<a class="siteLink" href="/">Translator</a>-->
-		<a class="siteLinkDiv" href="{base}/" aria-current={page.url.pathname === `${base}/` ? "page" : ""}>
-			<span class="siteLink">Translator</span>
-		</a>
-		<a class="siteLinkDiv" href="{base}/about" aria-current={page.url.pathname === `${base}/about/` ? "page" : ""}>
-			<span class="siteLink">About</span>
-		</a>
-		<!--<a class="siteLink" href="/about/">About</a>-->
-	</div>
-	{#if !page.data.usesTranslator && !translatorReady}
-		<div class="freeFloatingLoadingBar">
-			<LoadingBar dependencies={dependencies} loadingLogs={loadingLogs}/>
+<div class="siteContainer">
+	<div class="site">
+		<div class="siteHeader">
+			<!--<a class="siteLink" href="/">Translator</a>-->
+			<a class="siteLinkDiv" href="{base}/" aria-current={page.url.pathname === `${base}/` ? "page" : ""}>
+				<span class="siteLink">Translator</span>
+			</a>
+			<a class="siteLinkDiv" href="{base}/dictionary" aria-current={page.url.pathname === `${base}/dictionary/` ? "page" : ""}>
+				<span class="siteLink">Dictionary</span>
+			</a>
+			<a class="siteLinkDiv" href="{base}/about" aria-current={page.url.pathname === `${base}/about/` ? "page" : ""}>
+				<span class="siteLink">About</span>
+			</a>
+			<!--<a class="siteLink" href="/about/">About</a>-->
 		</div>
-	{/if}
-	<div class="siteMain">
-		<!--<main>--><!--{@render children()}-->
-		<div class="siteChildrenContainer">
-			{#if page.data.usesTranslator}
-				<LoadingScreen dependencies={dependencies} loadingLogs={loadingLogs} loadingScreenActive={!translatorReady}>
+		{#if !page.data.usesTranslator && !translatorState.translatorReady}
+			<div class="freeFloatingLoadingBar">
+				<LoadingBar dependencies={translatorState.raiiTranslator?.dependencies} loadingLogs={translatorState.raiiTranslator?.loadingLogs}/>
+			</div>
+		{/if}
+		<div class="siteMain">
+			<!--<main>--><!--{@render children()}-->
+			<div class="siteChildrenContainer">
+				{#if page.data.usesTranslator}
+					<LoadingScreen dependencies={translatorState.raiiTranslator?.dependencies} loadingLogs={translatorState.raiiTranslator?.loadingLogs} loadingScreenActive={!translatorState.translatorReady}>
+						{@render children()}
+					</LoadingScreen>
+				{:else}
 					{@render children()}
-				</LoadingScreen>
-			{:else}
-				{@render children()}
-			{/if}
+				{/if}
+			</div>
+			<!--</main>-->
 		</div>
-		<!--</main>-->
 	</div>
 </div>
 
 <style lang="scss">
+    .siteContainer {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      height: 100%;
+
+      align-items: center;
+      justify-content: center;
+    }
+
 	.site {
 	  display: flex;
 	  flex-direction: column;
+	  align-items: center;
 
 	  margin: 8px;
 
-	  width: calc(100dvw - 16px);
-	  height: calc(100dvh - 16px);
+	  width: calc(100% - 16px);
+	  //width: 100%;
+	  height: calc(100% - 16px);
+
+	  font-family: system-ui;
 	}
 
 	.siteHeader {
-	  height: 9vh;
+	  height: 9dvh;
+	  width: 100%;
 
-	  margin-bottom: 1vh;
+	  margin-bottom: 1dvh;
 
 	  display: flex;
 	  flex-direction: row;
@@ -172,6 +179,7 @@
 	.siteMain {
 	  display: flex;
 	  flex-grow: 1;
+	  width: 100%;
 	  //align-items: stretch;
 	  //overflow: auto;
 	}

@@ -157,7 +157,7 @@ libraryGenerationPromises.push(packageFolderAsPythonLib("./src/lib/python_overla
 
 //console.log("bap")
 
-//const translateToGorgus = fs.readFileSync("./src/lib/python_scripts/translate_to_gorgus.py", { encoding: "utf-8" });
+//const translateToGorgus = fs.readFileSync("./src/lib/python_scripts/translate.py", { encoding: "utf-8" });
 
 let _scripts: string[] = [];
 

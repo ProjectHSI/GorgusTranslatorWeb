@@ -49,10 +49,10 @@
 
 	.loadingBarContainer {
 		position: relative;
-		width: 95%;
-	    height: 95%;
-		left: 2.5%;
-		top: 2.5%;
+		width: 99%;
+	    height: 99%;
+		left: 0.5%;
+		top: 0.5%;
 	}
 
 	.loadingScreenChildren {
