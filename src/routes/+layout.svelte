@@ -23,12 +23,10 @@
 	        let serviceWorkerRegistration: ServiceWorkerRegistration = await navigator.serviceWorker.register(`${base}/service-worker.js`);
 
             serviceWorkerRegistration.addEventListener("updatefound", () => {
-                console.log('refresh');
                 location.reload();
             });
 
             if (serviceWorkerRegistration.active && !navigator.serviceWorker.controller) {
-                console.log("refresh");
                 location.reload();
             }
 	    }
