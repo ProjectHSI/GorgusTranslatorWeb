@@ -132,7 +132,7 @@
 										<td style:width="98%" class="englishWordTd">{dictionaryWord.english_words}</td>
 									{:else}
 										{#each dictionaryWord.english_words as englishWord, englishWordIndex}
-											<td style:width={`calc(${((100 / dictionaryWord.english_words.length) - 2)}% - 8px)`} class="englishWordTd">{englishWord}</td>
+											<td style:width={`calc(${((100 / dictionaryWord.english_words.length) - 2)}%)`} class="englishWordTd">{englishWord}</td>
 										{/each}
 									{/if}
 								</tr>
