@@ -87,7 +87,7 @@
 		</div>
 		{#if !page.data.usesTranslator && !translatorState.translatorReady}
 			<div class="freeFloatingLoadingBar">
-				<LoadingBar dependencies={translatorState.raiiTranslator?.dependencies} loadingLogs={translatorState.raiiTranslator?.loadingLogs}/>
+				<LoadingBar/>
 			</div>
 		{/if}
 		<div class="siteMain">
@@ -110,8 +110,8 @@
     .siteContainer {
       display: flex;
       flex-direction: row;
-      width: 100%;
-      height: 100%;
+      width: 100dvw;
+      height: 100dvh;
 
       align-items: center;
       justify-content: center;
@@ -134,6 +134,7 @@
 	.siteHeader {
 	  height: 9dvh;
 	  width: 100%;
+	  flex-shrink: 0;
 
 	  margin-bottom: 1dvh;
 
@@ -180,6 +181,10 @@
 	  display: flex;
 	  flex-grow: 1;
 	  width: 100%;
+	  align-items: center;
+	  justify-content: center;
+	  overflow: auto;
+      //overflow: scroll;
 	  //align-items: stretch;
 	  //overflow: auto;
 	}
@@ -187,9 +192,15 @@
 	.siteChildrenContainer {
 	  width: 100%;
 	  height: 100%;
+	  overflow: auto;
+	}
+
+	.siteChildrenContainerVisibleLoadingBar {
+	  height: 70dvh;
 	}
 
 	.freeFloatingLoadingBar {
-	  height: 20%;
+	  height: 20dvh;
+	  width: 100%;
 	}
 </style>
