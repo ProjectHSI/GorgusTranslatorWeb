@@ -178,6 +178,7 @@ class _PythonWorker {
                     stream_text: event
                 } as PythonWorker.StdStreamEvent);
                 log(`[PYTHON]: ${event}`);
+                //console.log(event);
             },
             stdin: popStdin,
             async preRun(Module: any): Promise<void> {

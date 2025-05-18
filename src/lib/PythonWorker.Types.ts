@@ -76,4 +76,11 @@ export namespace PythonWorker {
         ReadyEvent |
         WebWorkerLogEvent |
         WebWorkerDependencyEvent;
+
+    export type Dictionary = {
+        word: string,
+        english_words: string[] | string,
+        informal: boolean,
+        extra_info?: string
+    }[]
 }

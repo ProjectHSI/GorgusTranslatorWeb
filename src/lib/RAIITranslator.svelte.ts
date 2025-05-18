@@ -4,6 +4,7 @@ import CommandType = PythonWorker.CommandType;
 
 import "core-js/actual/typed-array/from-base64";
 import "core-js/actual/typed-array/to-base64";
+import DependencyGroups = PythonWorker.DependencyGroups;
 
 //import Python from "$lib/python/wasm/python.mjs";
 
@@ -19,6 +20,9 @@ export class RAIITranslator {
     private pythonWorkerStdInInt32: Int32Array | undefined = undefined;
 
     private stdoutCallbacks: ((data: string) => void)[] = [];
+
+    loadingLogs: string[] = $state([]);
+    dependencies?: DependencyGroups = $state(undefined);
 
     //private _isTranslatorReady: boolean = false;
     private _translatorReady: boolean = false;
@@ -71,6 +75,14 @@ export class RAIITranslator {
                     for (const stdoutCallback of this.stdoutCallbacks) {
                         stdoutCallback(e.data.stream_text);
                     }
+                    break;
+
+                case PythonWorker.CommandType.WW_Log:
+                    this.loadingLogs.push(e.data.log);
+                    break;
+
+                case PythonWorker.CommandType.WW_Dependency:
+                    this.dependencies = e.data.dependencyGroups;
                     break;
             }
         }
@@ -130,12 +142,7 @@ export class RAIITranslator {
     private textEncoder = new TextEncoder();
     private textDecoder = new TextDecoder();
 
-    getDictionary(): Promise<{
-        word: string,
-        word_english: string[],
-        informal: boolean,
-        extra_info?: string
-    }[]> {
+    getDictionary(): Promise<PythonWorker.Dictionary> {
         return new Promise((resolve, reject) => {
             if (!this.vmActive || this.pythonWorkerStdIn == undefined || this.pythonWorkerStdInInt32 == undefined) {
                 console.log(this.vmActive, this.pythonWorkerStdIn, this.pythonWorkerStdInInt32)
@@ -143,10 +150,12 @@ export class RAIITranslator {
             }
 
             this.stdoutCallbacks.push((data) => {
-                let dictionaryRegexExec = this.translationOutputRegex.exec(data);
+                let dictionaryRegexExec = this.dictionaryRegex.exec(data);
 
                 if (dictionaryRegexExec == null)
                     return;
+
+                //console.log("got", dictionaryRegexExec[1], JSON.parse(dictionaryRegexExec[1]))
 
                 resolve(JSON.parse(dictionaryRegexExec[1]));
             });

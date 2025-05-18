@@ -135,7 +135,7 @@
       height: 100%;
       //max-height: 5px;
       width: 100%;
-      z-index: 2;
+      z-index: 1;
       padding-top: 0.1%;
       padding-bottom: 0.1%;
     }
@@ -314,7 +314,7 @@
 
 	.loadingBarShine {
 	  display: inline-block;
-	  z-index: 1;
+	  z-index: 2;
 	  width: 10%;
 	  //min-height: 100%;
 	  height: 800%;
@@ -323,10 +323,13 @@
 	  top: -350%;
 	  left: 45%;
 	  rotate: z 22.5deg;
-	  background-color: cornflowerblue;
+	  background-color: rgba(100, 149, 237, 0.2);
+
+	  pointer-events: none;
+	  mix-blend-mode: screen;
 
 	  animation-name: loadingBarShineAnimation;
-	  animation-duration: 5s;
+	  animation-duration: 4s;
 	  animation-timing-function: cubic-bezier(0,.85,1,.15);
 	  animation-iteration-count: infinite;
 	}

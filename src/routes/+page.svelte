@@ -1,15 +1,17 @@
 <script lang="ts">
 	//import {PythonWorker} from "$lib/PythonWorker";
     import {getContext, onMount, untrack} from 'svelte';
-    import {RAIITranslator} from "$lib/RAIITranslator";
+    import {RAIITranslator} from "$lib/RAIITranslator.svelte";
     //import LoadingBar from "../components/LoadingBar.svelte";
     //import LoadingTips from "$lib/loadingTips"
     import LoadingScreen from "../components/LoadingScreen.svelte";
     import {beforeNavigate, onNavigate} from "$app/navigation";
     import {page} from "$app/state";
     import {PythonWorker} from "$lib/PythonWorker.Types";
+    import {getTranslatorState} from "$lib/TranslatorStateManagement";
 
-    let translatorReady: boolean = getContext("translatorReady");
+    //let translatorReady: boolean = getContext("translatorReady");
+    const translatorState = getTranslatorState();
 
     //raiiPython.runModule();
     let inputString: string = $state("");
@@ -31,15 +33,12 @@
 
         //console.log("T R A N S L A T E D")
 
-	    const raiiTranslatorMethod: () => (RAIITranslator | undefined) = getContext("raiiTranslator");
-        const raiiTranslator = raiiTranslatorMethod();
-
-        if (raiiTranslator !== undefined && raiiTranslator.isTranslatorReady()) {
+        if (translatorState.raiiTranslator !== undefined && translatorState.raiiTranslator.isTranslatorReady()) {
             //let translationPromise: Promise<string> | undefined;
 
             //switch (translationTargetOption) {
 	            //case "English -> Gorgus":
-                    raiiTranslator.translate(inputString, translationTargetOption == "English -> Gorgus" ? "G" : "E", shouldTranslationBeFormal).then((translatedString: string) => {
+            translatorState.raiiTranslator.translate(inputString, translationTargetOption == "English -> Gorgus" ? "G" : "E", shouldTranslationBeFormal).then((translatedString: string) => {
                         outputString = translatedString;
                     }).catch((rejectedReason: Error) => {
                         if (rejectedReason.message != "bruh")
@@ -101,7 +100,7 @@
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>-->
 <div class="mainTranslationControls">
 <textarea
-		disabled={!translatorReady}
+		disabled={!translatorState.translatorReady}
 		class="translationTextArea"
 		bind:value={inputString}>
 </textarea>
@@ -109,7 +108,7 @@
 		<option class="translationTargetOption" id="toG">English -> Gorgus</option>
 		<option class="translationTargetOption" id="toE">Gorgus -> English</option>
 	</select>
-	<textarea disabled={!translatorReady} contenteditable="false" class="translationTextArea">{outputString}</textarea>
+	<textarea disabled={!translatorState.translatorReady} contenteditable="false" class="translationTextArea">{outputString}</textarea>
 </div>
 {#if translationTargetOption === "English -> Gorgus"}
 	<div class="translationOptions">
