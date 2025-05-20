@@ -4,7 +4,6 @@ import CommandType = PythonWorker.CommandType;
 
 import "core-js/actual/typed-array/from-base64";
 import "core-js/actual/typed-array/to-base64";
-import DependencyGroups = PythonWorker.DependencyGroups;
 
 //import Python from "$lib/python/wasm/python.mjs";
 
@@ -19,10 +18,10 @@ export class RAIITranslator {
     private pythonWorkerStdIn: SharedArrayBuffer | undefined = undefined;
     private pythonWorkerStdInInt32: Int32Array | undefined = undefined;
 
-    private stdoutCallbacks: ((data: string) => void)[] = [];
+    private messageCallbacks: ((data: PythonWorker.Command) => boolean)[] = [];
 
     loadingLogs: string[] = $state([]);
-    dependencies?: DependencyGroups = $state(undefined);
+    dependencies?: PythonWorker.DependencyGroups = $state(undefined);
 
     //private _isTranslatorReady: boolean = false;
     private _translatorReady: boolean = false;
@@ -72,8 +71,11 @@ export class RAIITranslator {
                     if (e.data.stream_text == "[GTW_O]: runtime_ready") {
                         this._translatorReady = true;
                     }
-                    for (const stdoutCallback of this.stdoutCallbacks) {
-                        stdoutCallback(e.data.stream_text);
+
+                    let _messageCallbacks = [];
+                    for (const messageCallback of this.messageCallbacks) {
+                        if (messageCallback(e.data))
+                            _messageCallbacks.push(messageCallback);
                     }
                     break;
 
@@ -103,15 +105,33 @@ export class RAIITranslator {
             //}});
     }
 
+    async waitForEvent(commandTypes: PythonWorker.CommandType[] | PythonWorker.CommandType, messageCondition?: (command: PythonWorker.Command) => boolean): Promise<PythonWorker.Command> {
+        //console.log(typeof commandTypes);
+
+        return new Promise((resolve) => {
+            this.messageCallbacks.push((messageData) => {
+                if (
+                    typeof commandTypes == "object"
+                        ? commandTypes.includes(messageData.command_type)
+                        : messageData.command_type == commandTypes
+                        && (messageCondition ? messageCondition(messageData) : true)
+                ) {
+                    resolve(messageData);
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+        });
+    }
+
     async waitUntilTranslatorReady(): Promise<void> {
         if (this._translatorReady) {
             return;
         } else {
-            return new Promise((resolve, reject) => {
-                this.stdoutCallbacks.push((stdoutString: string) => {
-                    if (stdoutString == "[GTW_O]: runtime_ready")
-                        resolve();
-                })
+            await this.waitForEvent(PythonWorker.CommandType.VM_Stdout, (event: PythonWorker.Command): boolean => {
+                const castedCommand = event as PythonWorker.StdStreamEvent;
+                return castedCommand.stream_text == "[GTW_O]: runtime_ready";
             });
         }
     }
@@ -142,68 +162,67 @@ export class RAIITranslator {
     private textEncoder = new TextEncoder();
     private textDecoder = new TextDecoder();
 
-    getDictionary(): Promise<PythonWorker.Dictionary> {
-        return new Promise((resolve, reject) => {
-            if (!this.vmActive || this.pythonWorkerStdIn == undefined || this.pythonWorkerStdInInt32 == undefined) {
-                console.log(this.vmActive, this.pythonWorkerStdIn, this.pythonWorkerStdInInt32)
-                throw new Error("bruh");
-            }
+    async getDictionary(): Promise<PythonWorker.Dictionary> {
+        //return new Promise((resolve, reject) => {
+        if (!this.vmActive || this.pythonWorkerStdIn == undefined || this.pythonWorkerStdInInt32 == undefined) {
+            console.log(this.vmActive, this.pythonWorkerStdIn, this.pythonWorkerStdInInt32)
+            throw new Error("bruh");
+        }
 
-            this.stdoutCallbacks.push((data) => {
-                let dictionaryRegexExec = this.dictionaryRegex.exec(data);
+        /*this.stdoutCallbacks.push((data) => {
+            let dictionaryRegexExec = this.dictionaryRegex.exec(data);
 
-                if (dictionaryRegexExec == null)
-                    return;
+            if (dictionaryRegexExec == null)
+                return;
 
-                //console.log("got", dictionaryRegexExec[1], JSON.parse(dictionaryRegexExec[1]))
+            //console.log("got", dictionaryRegexExec[1], JSON.parse(dictionaryRegexExec[1]))
 
-                resolve(JSON.parse(dictionaryRegexExec[1]));
-            });
+            resolve(JSON.parse(dictionaryRegexExec[1]));
+        });*/
 
-            this.stdin(`[GTW_I]: [DG]`);
+        this.stdin(`[GTW_I]: [DG]`);
+
+        const dictionaryStdoutEvent = await this.waitForEvent(PythonWorker.CommandType.VM_Stdout, (event: PythonWorker.Command): boolean => {
+            const castedCommand = event as PythonWorker.StdStreamEvent;
+            return this.dictionaryRegex.exec(castedCommand.stream_text) !== null;
         });
+
+        const castedDictionaryStdoutEvent: PythonWorker.StdStreamEvent = dictionaryStdoutEvent as PythonWorker.StdStreamEvent;
+        const dictionaryRegexExecResult = this.dictionaryRegex.exec(castedDictionaryStdoutEvent.stream_text);
+
+        if (!dictionaryRegexExecResult)
+            throw new Error("getDictionary() Logic Error #1")
+
+        return JSON.parse(dictionaryRegexExecResult[1]);
+        //});
     }
 
-    translate(stringToTranslate: string, target: string, formal: boolean = true): Promise<string> {
-        //this.stdoutPromises[{ type: "G", text: stringToTranslate }] = new Promise();
+    async translate(stringToTranslate: string, target: string, formal: boolean = true): Promise<string> {
+        if (!this.vmActive || this.pythonWorkerStdIn == undefined || this.pythonWorkerStdInInt32 == undefined) {
+            console.log(this.vmActive, this.pythonWorkerStdIn, this.pythonWorkerStdInInt32)
+            throw new Error("bruh");
+        }
 
-        return new Promise<string>((resolve, reject) => {
-            if (!this.vmActive || this.pythonWorkerStdIn == undefined || this.pythonWorkerStdInInt32 == undefined) {
-                console.log(this.vmActive, this.pythonWorkerStdIn, this.pythonWorkerStdInInt32)
-                throw new Error("bruh");
-            }
+        stringToTranslate = (this.textEncoder.encode(stringToTranslate)).toBase64({ alphabet: "base64" });
 
-            stringToTranslate = (this.textEncoder.encode(stringToTranslate)).toBase64({ alphabet: "base64" });
+        this.stdin(`[GTW_I]: [${target} [${!formal ? "!" : ""}F]]: {${stringToTranslate}}`);
 
-            this.stdoutCallbacks.push((data) => {
-                let translationOutput = this.translationOutputRegex.exec(data);
+        const translationStdoutEvent = await this.waitForEvent(PythonWorker.CommandType.VM_Stdout, (event: PythonWorker.Command): boolean => {
+            const castedCommand = event as PythonWorker.StdStreamEvent;
+            const translationRegexExecResult = this.translationOutputRegex.exec(castedCommand.stream_text);
 
-                if (translationOutput == null)
-                    return;
-
-                if (translationOutput[1] == target && translationOutput[2] == (!formal ? "!" : "") && translationOutput[3] == stringToTranslate) {
-                    console.log("yay folks");
-                    resolve(this.textDecoder.decode(Uint8Array.fromBase64(translationOutput[4])));
-                }
-            });
-
-            this.stdin(`[GTW_I]: [${target} [${!formal ? "!" : ""}F]]: {${stringToTranslate}}`);
-
-            //console.log(stringToTranslate)
-
-            //console.log(`[GTW_I]: [G]: {${stringToTranslate}}`);
-
-
-            //this.pythonWorkerStdInInt32
-
-            //this.pythonWorkerStdIn
-
-            /*this.pythonWorker.postMessage({
-                command_type: CommandType.VM_Stdin,
-                stream_text: `[GTW_I]: [G]: {${stringToTranslate}}`
-            } as PythonWorker.StdStreamEvent);*/
+            // Check if the output is a translation result & check it matches the parameters
+            return !!(translationRegexExecResult && translationRegexExecResult[1] === target && translationRegexExecResult[2] === (!formal ? "!" : "") && translationRegexExecResult[3] === stringToTranslate);
         });
-        //this.raiiPython.stdin(`[GTW_I]: [G]: {${stringToTranslate.replace("\n", "")}}\n`);
+
+        const castedTranslationStdoutEvent: PythonWorker.StdStreamEvent = translationStdoutEvent as PythonWorker.StdStreamEvent;
+        const translationRegexExecResult = this.translationOutputRegex.exec(castedTranslationStdoutEvent.stream_text);
+
+        if (!translationRegexExecResult)
+            throw new Error("translate() Logic Error #1");
+
+        // we don't need to do extra checking here because of the message condition area
+        return translationRegexExecResult[4];
     }
 
     getPythonWorker() {
