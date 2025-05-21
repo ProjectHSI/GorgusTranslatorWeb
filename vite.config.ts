@@ -4,12 +4,12 @@ import compileTime from "vite-plugin-compile-time"
 import topLevelAwait from "vite-plugin-top-level-await";
 
 export default defineConfig({
-	plugins: [compileTime(), topLevelAwait({
+	plugins: [compileTime(), /*topLevelAwait({
 		// The export name of top-level await promise for each chunk module
 		promiseExportName: "__tla",
 		// The function to generate import names of top-level await promise in each chunk module
 		promiseImportName: i => `__tla_${i}`
-	}), sveltekit()],
+	})*/, sveltekit()],
 
 	assetsInclude: [new RegExp("\\.(py)(\\?.*)?$", "i")],
 
@@ -26,7 +26,9 @@ export default defineConfig({
 		/*watch: {
 			include: ["**!/python_*!/!**"]
 		}*/
-		sourcemap: "inline"
+		sourcemap: true,
+		//assetsInlineLimit: Infinity,
+		target: "es2022"
 	},
 	server: {
 		headers: {
@@ -40,12 +42,12 @@ export default defineConfig({
 		}
 	},
 	worker: {
-		plugins: () => {return [compileTime(), topLevelAwait({
+		plugins: () => {return [compileTime(), /*topLevelAwait({
 			// The export name of top-level await promise for each chunk module
 			promiseExportName: "__tla",
 			// The function to generate import names of top-level await promise in each chunk module
 			promiseImportName: i => `__tla_${i}`
-		})]},
+		})*/]},
 		format: "es"
 	}
 });

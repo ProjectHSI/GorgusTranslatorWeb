@@ -4,6 +4,23 @@ on:
   push:
     branches-ignore:
       - main
+  workflow_dispatch:
+    inputs:
+      updateGorgusTranslator:
+        description: "Update Gorgus Translator"
+        required: false
+        default: false
+        type: boolean
+      gorgusTranslatorRepo:
+        description: "Gorgus Translator Repository"
+        required: false
+        default: "https://github.com/Gorgus-Ikshrerack/Gorgus-Translator.git"
+        type: string
+      gorgusTranslatorBranch:
+        description: "Gorgus Translator Branch"
+        required: false
+        default: "main"
+        type: string
   workflow_call:
     outputs:
       ARTIFACT:
@@ -213,14 +230,22 @@ jobs:
         run: |
           pnpm run build
 
-#      - name: Determine Artifact Name
-#        id: determine_artifact
-#        shell: pwsh
-#        run: |
-#          echo "ARTIFACT=$artifactName" >> $GITHUB_OUTPUT
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           path: './build'
           name: ${{ env.ARTIFACT_ID }}
+
+      - name: Build Node Server
+        if: inputs.build
+        env:
+          BASE_PATH: '/${{ github.event.repository.name }}'
+          USE_NODE_SERVER: true
+        run: |
+          pnpm run build
+
+      - name: Upload Node Server Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: './build'
+          name: ${{ env.ARTIFACT_ID }}-node
