@@ -51,6 +51,13 @@ export class RAIITranslator {
         console.log(this.pythonWorker);
 
         this.pythonWorker.onmessage = (e: MessageEvent<PythonWorker.Command>) => {
+            let _messageCallbacks = [];
+            for (const messageCallback of this.messageCallbacks) {
+                if (!messageCallback(e.data))
+                    _messageCallbacks.push(messageCallback);
+            }
+            this.messageCallbacks = _messageCallbacks;
+
             switch (e.data.command_type) {
                 case PythonWorker.CommandType.VM_Ready:
                     console.log(e);
@@ -70,12 +77,6 @@ export class RAIITranslator {
                     //this.stdoutPromises[{ type: "G", text: "abd" }].
                     if (e.data.stream_text == "[GTW_O]: runtime_ready") {
                         this._translatorReady = true;
-                    }
-
-                    let _messageCallbacks = [];
-                    for (const messageCallback of this.messageCallbacks) {
-                        if (messageCallback(e.data))
-                            _messageCallbacks.push(messageCallback);
                     }
                     break;
 
