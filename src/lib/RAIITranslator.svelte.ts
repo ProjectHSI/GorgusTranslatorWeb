@@ -222,7 +222,7 @@ export class RAIITranslator {
             throw new Error("translate() Logic Error #1");
 
         // we don't need to do extra checking here because of the message condition area
-        return translationRegexExecResult[4];
+        return this.textDecoder.decode(Uint8Array.fromBase64(translationRegexExecResult[4]));
     }
 
     getPythonWorker() {
